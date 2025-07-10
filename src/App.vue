@@ -5,6 +5,7 @@ import TimelineChart from './components/TimelineChart.vue';
 import QPULegend from './components/QPULegend.vue';
 import QPUDetailTooltip from './components/QPUDetailTooltip.vue';
 import AboutSection from './components/AboutSection.vue';
+import DisclaimerSection from './components/DisclaimerSection.vue';
 
 const qpuData = ref([]);
 const organizations = ref([]);  // Will hold organization data for the legend
@@ -159,6 +160,9 @@ function handleTooltipMouseLeave() {
             <p>Debug: No organizations data available.</p>
           </div>
         </div>
+      </div>
+      <div class="max-w-7xl mx-auto w-full">
+        <DisclaimerSection />
       </div>
       <transition name="fade">
         <div v-if="showTooltip" 

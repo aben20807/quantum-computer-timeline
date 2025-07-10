@@ -34,6 +34,18 @@ The application uses a CSV file with the following structure:
 | externalLink | JSON array of research papers with title and URL |
 | description | Brief description of the quantum computer's significance |
 
+## Disclaimer
+
+The quantum computing field is rapidly evolving, and despite our best efforts to maintain accurate information, some data in this visualization may become outdated or contain inaccuracies. Details about quantum processors, qubit counts, release dates, and organizational attributions are compiled from publicly available sources which themselves may contain varying degrees of precision or marketing claims.
+
+**We welcome contributions to improve data accuracy:**
+
+- If you find any errors or have more accurate/updated information, please submit an issue or pull request on GitHub
+- For substantial additions or corrections to the dataset, please include references to verifiable sources
+- Organizations working on quantum computing are encouraged to submit their own QPU data for inclusion
+
+This project aims to provide an educational visualization of quantum computing progress rather than an authoritative technical reference. All information should be verified with original sources when used for research, academic, or business purposes.
+
 ## Project Structure
 
 ```plaintext
@@ -107,6 +119,16 @@ To add or update quantum computer information:
 2. Follow the existing format for consistency
 3. For paper links, use the JSON array format: `[{"title":"Paper Title","url":"https://example.com"}]`
 4. The application will automatically update with the new data
+
+## Contributing
+
+We welcome contributions to improve both the application and the dataset. Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on:
+
+- Data corrections and additions
+- Bug reports and feature requests
+- Code contributions
+- Development setup
+- Pull request process
 
 ## Customizing the Visualization
 
