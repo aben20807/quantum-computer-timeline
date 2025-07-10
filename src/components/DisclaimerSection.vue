@@ -61,7 +61,7 @@
 
 .disclaimer-content {
   width: 100%;
-  max-width: 800px;
+  max-width: 1100px;
 }
 
 .disclaimer-text {
@@ -81,11 +81,12 @@
 
 .disclaimer-link {
   color: #4fc3f7;
-  text-decoration: underline;
+  text-decoration: inherit;
   transition: color 0.2s;
 }
 
 .disclaimer-link:hover {
   color: #81d4fa;
+  text-decoration: underline;
 }
 </style>

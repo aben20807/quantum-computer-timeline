@@ -38,5 +38,6 @@
   color: rgba(255,255,255,0.9);
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   margin: 0;
+  max-width: 1100px;
 }
 </style>

@@ -178,7 +178,7 @@ function handleTooltipMouseLeave() {
         </div>
       </transition>
     </main>
-    <footer class="mt-12 mb-4 text-sm opacity-80">2025 &copy; <a href="https://github.com/aben20807" class="text-blue-300 hover:text-blue-200 underline" target="_blank">aben20807</a></footer>
+    <footer class="mt-12 mb-4 text-sm opacity-80">2025 &copy; <a href="https://github.com/aben20807" class="footer-link" target="_blank">aben20807</a></footer>
   </div>
 </template>
 
@@ -188,5 +188,18 @@ function handleTooltipMouseLeave() {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+
+/* Override global anchor styles with higher specificity */
+footer .footer-link {
+  color: #4fc3f7;
+  text-decoration: underline;
+  font-weight: 400;
+  text-decoration: inherit;
+}
+
+footer .footer-link:hover {
+  color: #81d4fa;
+  text-decoration: underline;
 }
 </style>
