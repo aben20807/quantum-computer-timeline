@@ -24,13 +24,11 @@ function parsePaperLinks(links) {
 function getOrganizationStyles(data) {
   const palette = [
     // Built-in symbols
-    { color: '#42b883', symbol: 'roundRect' },     // Google
-    { color: '#ff9800', symbol: 'rect' },          // IBM (use 'rect' instead of 'square' for ECharts compatibility)
-    { color: '#2196f3', symbol: 'triangle' },      // USTC
-    { color: '#e91e63', symbol: 'diamond' },       // Additional organizations
+    { color: '#42b883', symbol: 'roundRect' },
+    { color: '#ff9800', symbol: 'rect' },
+    { color: '#2196f3', symbol: 'triangle' },
+    { color: '#e91e63', symbol: 'diamond' },
     { color: '#9c27b0', symbol: 'circle' },
-    { color: '#4caf50', symbol: 'pin' },
-    { color: '#f44336', symbol: 'arrow' },
     { color: '#607d8b', symbol: 'emptyCircle' },
     
     // Custom path-based symbols
@@ -39,13 +37,9 @@ function getOrganizationStyles(data) {
     // Diamond (custom)
     { color: '#ffc107', symbol: 'path://M0 8l8 -8l8 8l-8 8l-8 -8z' },
     // Hexagon
-    { color: '#795548', symbol: 'path://M8 1L15.5 5.5L15.5 14.5L8 19L0.5 14.5L0.5 5.5Z' },
+    { color: '#f44336', symbol: 'path://M8 1L15.5 5.5L15.5 14.5L8 19L0.5 14.5L0.5 5.5Z' },
     // Cross
     { color: '#3f51b5', symbol: 'path://M2,7L7,7L7,2L9,2L9,7L14,7L14,9L9,9L9,14L7,14L7,9L2,9Z' },
-    // Pentagon
-    { color: '#8bc34a', symbol: 'path://M6.476,1.176L0.32,6.741L2.727,14.299L10.795,14.307L13.27,6.762L' },
-    // Heart
-    { color: '#ff5722', symbol: 'path://M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z' },
     // Sun/Flower
     { color: '#03a9f4', symbol: 'path://M6.993 12c0 2.761 2.246 5.007 5.007 5.007s5.007-2.246 5.007-5.007S14.761 6.993 12 6.993 6.993 9.239 6.993 12zM12 8.993c1.658 0 3.007 1.349 3.007 3.007S13.658 15.007 12 15.007 8.993 13.658 8.993 12 10.342 8.993 12 8.993zM10.998 19h2v3h-2zm0-17h2v3h-2zm-9 9h3v2h-3zm17 0h3v2h-3zM4.219 18.363l2.12-2.122 1.415 1.414-2.12 2.122zM16.24 6.344l2.122-2.122 1.414 1.414-2.122 2.122zM6.342 7.759 4.22 5.637l1.415-1.414 2.12 2.122zm13.434 10.605-1.414 1.414-2.122-2.122 1.414-1.414z' },
     // Cloud
