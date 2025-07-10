@@ -6,10 +6,10 @@
       <p><span class="label">Organization:</span> {{ qpu.organization }}</p>
       <p><span class="label">Release Date:</span> {{ qpu.releaseDate }}</p>
       <p><span class="label">Qubit Count:</span> {{ qpu.qubitCount }}</p>
-      <div v-if="qpu.paperLinks && qpu.paperLinks.length" class="papers-section">
-        <span class="label">Papers:</span>
+      <div v-if="qpu.externalLink && qpu.externalLink.length" class="papers-section">
+        <span class="label">Link(s):</span>
         <ul class="papers-list">
-          <li v-for="link in qpu.paperLinks" :key="link.url">
+          <li v-for="link in qpu.externalLink" :key="link.url">
             <a :href="link.url" target="_blank" class="paper-link">{{ link.title }}</a>
           </li>
         </ul>

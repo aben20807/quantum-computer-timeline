@@ -67,7 +67,7 @@ onMounted(() => {
           qpuData.value = results.data.map(row => ({
             ...row,
             qubitCount: Number(row.qubitCount),
-            paperLinks: parsePaperLinks(row.paperLinks),
+            externalLink: parsePaperLinks(row.externalLink),
           }));
           organizations.value = getOrganizationStyles(qpuData.value);
           console.log('App.vue - QPU data loaded:', qpuData.value);
@@ -174,7 +174,7 @@ function handleTooltipMouseLeave() {
         </div>
       </transition>
     </main>
-    <footer class="mt-12 mb-4 text-sm opacity-60">&copy; 2025 Quantum Timeline Project</footer>
+    <footer class="mt-12 mb-4 text-sm opacity-80">2025 &copy; <a href="https://github.com/aben20807" class="text-blue-300 hover:text-blue-200 underline" target="_blank">aben20807</a></footer>
   </div>
 </template>
 

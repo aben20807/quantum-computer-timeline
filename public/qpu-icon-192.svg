@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="192" height="192">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2196f3;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#9c27b0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e91e63;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow effect -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Main background -->
+  <circle cx="50" cy="50" r="45" fill="url(#bgGradient)" />
+  
+  <!-- Bloch sphere representation -->
+  <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
+  <ellipse cx="50" cy="50" rx="30" ry="12" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+  
+  <!-- Quantum circuit elements -->
+  <line x1="25" y1="40" x2="75" y2="40" stroke="white" stroke-width="2.5" />
+  <line x1="25" y1="60" x2="75" y2="60" stroke="white" stroke-width="2.5" />
+  
+  <!-- Quantum gate -->
+  <rect x="40" y="32" width="20" height="16" fill="none" stroke="white" stroke-width="2" rx="2" ry="2" />
+  
+  <!-- Qubit node -->
+  <circle cx="50" cy="60" r="6" fill="white" filter="url(#glow)" />
+  
+  <!-- Connecting line -->
+  <line x1="50" y1="48" x2="50" y2="54" stroke="white" stroke-width="2" />
+  
+  <!-- Quantum state vector -->
+  <line x1="50" y1="50" x2="65" y2="30" stroke="white" stroke-width="1.5" stroke-dasharray="2,1" />
+  <circle cx="65" cy="30" r="3" fill="white" opacity="0.8" />
+</svg>

@@ -19,7 +19,7 @@
            backdropFilter: 'blur(12px)',
            border: '1px solid rgba(255,255,255,0.15)',
            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-           cursor: 'pointer',
+           cursor: 'default',
            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
            animationDelay: `${index * 0.1}s`,
            position: 'relative',

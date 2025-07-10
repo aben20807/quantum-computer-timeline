@@ -1,0 +1,29 @@
+{
+  "name": "QPU Timeline Visualization",
+  "short_name": "QPU Timeline",
+  "description": "Interactive visualization of quantum computer evolution",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2196f3",
+  "icons": [
+    {
+      "src": "/qpu-icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/qpu-icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/enhanced-qpu-favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
