@@ -9,6 +9,7 @@ import DisclaimerSection from './components/DisclaimerSection.vue';
 
 const qpuData = ref([]);
 const organizations = ref([]);  // Will hold organization data for the legend
+const visibleOrganizations = ref(new Set());  // Track which organizations are visible
 const selectedQPU = ref(null);
 const showTooltip = ref(false);
 const tooltipPosition = ref({ x: 0, y: 0 });
@@ -66,7 +67,8 @@ function getOrganizationStyles(data) {
   return orgNames.map((name, index) => ({
     name,
     color: palette[index % palette.length].color,
-    symbol: palette[index % palette.length].symbol
+    symbol: palette[index % palette.length].symbol,
+    visible: true // All organizations are visible by default
   }));
 }
 
@@ -93,6 +95,11 @@ onMounted(() => {
           organizations.value = getOrganizationStyles(qpuData.value);
           console.log('App.vue - QPU data loaded:', qpuData.value);
           console.log('App.vue - Organizations generated:', organizations.value);
+          
+          // Initialize all organizations as visible
+          visibleOrganizations.value = new Set(
+            organizations.value.map(org => org.name)
+          );
           
           // Ensure the organizations value is correctly structured and not empty
           if (!organizations.value || !Array.isArray(organizations.value) || organizations.value.length === 0) {
@@ -156,6 +163,34 @@ function handleTooltipMouseLeave() {
   showTooltip.value = false;
   selectedQPU.value = null;
 }
+
+function toggleOrganizationVisibility(orgName) {
+  // Toggle the visibility of the organization
+  if (visibleOrganizations.value.has(orgName)) {
+    visibleOrganizations.value.delete(orgName);
+  } else {
+    visibleOrganizations.value.add(orgName);
+  }
+  
+  // Update the visible property in the organizations array
+  organizations.value = organizations.value.map(org => ({
+    ...org,
+    visible: visibleOrganizations.value.has(org.name)
+  }));
+}
+
+function resetOrganizationVisibility() {
+  // Make all organizations visible
+  visibleOrganizations.value = new Set(
+    organizations.value.map(org => org.name)
+  );
+  
+  // Update the visible property in the organizations array
+  organizations.value = organizations.value.map(org => ({
+    ...org,
+    visible: true
+  }));
+}
 </script>
 
 <template>
@@ -172,14 +207,37 @@ function handleTooltipMouseLeave() {
         <TimelineChart 
           :data="qpuData" 
           :organization-styles="organizations"
+          :visible-organizations="visibleOrganizations"
           @point-hover="handlePointHover" 
           @mouseleave="handleChartLeave" 
         />
       </div>
       <div class="max-w-7xl mx-auto w-full">
         <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
-          <h2 class="text-lg font-medium mb-6 text-center text-gray-200">Organizations</h2>
-          <QPULegend :companies="organizations" />
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-lg font-medium text-gray-200">Organizations</h2>
+              <div class="text-sm text-gray-400 mt-1">
+                Showing {{ visibleOrganizations.size }} of {{ organizations.length }} organizations
+              </div>
+            </div>
+            <button 
+              @click="resetOrganizationVisibility"
+              class="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-sm font-medium rounded-full transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              :disabled="visibleOrganizations.size === organizations.length"
+              :class="{ 'opacity-50 cursor-not-allowed hover:shadow-md hover:transform-none': visibleOrganizations.size === organizations.length }"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span class="font-semibold">Show All</span>
+            </button>
+          </div>
+          <QPULegend 
+            :companies="organizations" 
+            :visible-organizations="visibleOrganizations"
+            @toggle-organization="toggleOrganizationVisibility" 
+          />
           <!-- Display debug info if legend is empty -->
           <div v-if="!organizations || !organizations.length" class="text-center text-red-400 mt-4">
             <p>Debug: No organizations data available.</p>

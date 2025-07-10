@@ -19,14 +19,16 @@
            backdropFilter: 'blur(12px)',
            border: '1px solid rgba(255,255,255,0.15)',
            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-           cursor: 'default',
+           cursor: 'pointer',
            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
            animationDelay: `${index * 0.1}s`,
            position: 'relative',
-           overflow: 'hidden'
+           overflow: 'hidden',
+           opacity: visibleOrganizations.has(organization.name) ? '1' : '0.5'
          }"
          @mouseenter="onHover"
-         @mouseleave="onLeave">
+         @mouseleave="onLeave"
+         @click="toggleOrganization(organization.name)">
       
       <!-- SVG Symbol Container -->
       <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;">
@@ -180,8 +182,14 @@ const props = defineProps({
   companies: { // Keeping prop name for API compatibility
     type: Array,
     default: () => []
+  },
+  visibleOrganizations: {
+    type: Set,
+    default: () => new Set()
   }
 });
+
+const emit = defineEmits(['toggle-organization']);
 
 // Debug - log the companies prop whenever it changes
 import { watch } from 'vue';
@@ -201,17 +209,11 @@ const onHover = (event) => {
   if (shine) {
     shine.style.opacity = '1';
   }
-  
-  // Scale the SVG
-  const svg = target.querySelector('svg');
-  if (svg) {
-    svg.style.transform = 'scale(1.15)';
-  }
 };
 
 const onLeave = (event) => {
   const target = event.currentTarget;
-  target.style.transform = 'translateY(0) scale(1)';
+  target.style.transform = '';
   target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.25)';
   target.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)';
   target.style.borderColor = 'rgba(255,255,255,0.15)';
@@ -221,16 +223,12 @@ const onLeave = (event) => {
   if (shine) {
     shine.style.opacity = '0';
   }
-  
-  // Reset SVG scale
-  const svg = target.querySelector('svg');
-  if (svg) {
-    svg.style.transform = 'scale(1)';
-  }
 };
 
-// Debug logging
-console.log('QPULegend companies:', props.companies);
+// Function to toggle organization visibility
+const toggleOrganization = (orgName) => {
+  emit('toggle-organization', orgName);
+};
 </script>
 
 <style scoped>

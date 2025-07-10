@@ -21,6 +21,10 @@ const props = defineProps({
   organizationStyles: {
     type: Array,
     default: () => []
+  },
+  visibleOrganizations: {
+    type: Set,
+    default: () => new Set()
   }
 });
 
@@ -56,8 +60,9 @@ const getChartData = () => {
     .filter(qpu => {
       const hasDate = qpu.releaseDate && !isNaN(Date.parse(qpu.releaseDate));
       const hasQubit = !isNaN(Number(qpu.qubitCount));
-      console.log('QPU:', qpu.name, 'hasDate:', hasDate, 'hasQubit:', hasQubit, 'date:', qpu.releaseDate, 'qubits:', qpu.qubitCount);
-      return hasDate && hasQubit;
+      const isVisible = props.visibleOrganizations.has(qpu.organization);
+      console.log('QPU:', qpu.name, 'hasDate:', hasDate, 'hasQubit:', hasQubit, 'isVisible:', isVisible);
+      return hasDate && hasQubit && isVisible;
     })
     .map(qpu => {
       const timestamp = new Date(qpu.releaseDate).getTime();
@@ -310,6 +315,12 @@ onBeforeUnmount(() => {
 
 watch(() => props.data, (newData) => {
   console.log('Data changed:', newData);
+  nextTick(() => renderChart());
+}, { deep: true });
+
+// Watch for changes in visible organizations
+watch(() => props.visibleOrganizations, () => {
+  console.log('Visible organizations changed:', [...props.visibleOrganizations]);
   nextTick(() => renderChart());
 }, { deep: true });
 </script>
