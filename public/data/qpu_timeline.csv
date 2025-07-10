@@ -1,0 +1,4 @@
+name,company,releaseDate,qubitCount,paperLinks,description
+Sycamore,Google,2019-10-23,53,"[{""title"":""Nature Paper"",""url"":""https://www.nature.com/articles/s41586-019-1666-5""}]","First quantum supremacy claim"
+Eagle,IBM,2021-11-16,127,"[{""title"":""IBM Blog"",""url"":""https://www.ibm.com/blogs/research/2021/11/quantum-processor-eagle/""}]","First 100+ qubit QPU"
+Zuchongzhi,USTC,2021-05-07,66,"[{""title"":""Science Paper"",""url"":""https://www.science.org/doi/10.1126/science.abe8770""}]","Chinese quantum advantage experiment"
