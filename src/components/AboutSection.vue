@@ -3,7 +3,7 @@
     <h2 class="about-title">About This Project</h2>
     <p class="about-text">
       This website visualizes the timeline of quantum computer development using real QPU data. 
-      Hover over points for details and paper links. Each company is represented by unique colors and symbols.
+      Hover over points for details and paper links. Each organization is represented by unique colors and symbols.
     </p>
   </section>
 </template>

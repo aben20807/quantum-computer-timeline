@@ -23,12 +23,12 @@ const props = defineProps({
 const chartContainer = ref(null);
 let chartInstance = null;
 
-const getCompanyStyle = (company) => {
+const getOrganizationStyle = (organization) => {
   const palette = [
     { color: '#42b883', symbol: 'circle' },     // Google - circle
     { color: '#ff9800', symbol: 'rect' },       // IBM - square
     { color: '#2196f3', symbol: 'triangle' },   // USTC - triangle
-    { color: '#e91e63', symbol: 'diamond' },    // Additional companies
+    { color: '#e91e63', symbol: 'diamond' },    // Additional organizations
     { color: '#9c27b0', symbol: 'pin' },
     { color: '#4caf50', symbol: 'arrow' },
     { color: '#f44336', symbol: 'circle' },
@@ -36,8 +36,9 @@ const getCompanyStyle = (company) => {
     { color: '#00bcd4', symbol: 'triangle' },
     { color: '#ffc107', symbol: 'diamond' }
   ];
-  const companies = [...new Set(props.data.map(qpu => qpu.company))];
-  const idx = companies.indexOf(company);
+  // Still use 'organization' as the field name since that's what exists in the data
+  const organizations = [...new Set(props.data.map(qpu => qpu.organization))];
+  const idx = organizations.indexOf(organization);
   return palette[idx % palette.length];
 };
 
@@ -55,7 +56,7 @@ const getChartData = () => {
       const timestamp = new Date(qpu.releaseDate).getTime();
       const qubits = Number(qpu.qubitCount);
       console.log('Mapping QPU:', qpu.name, 'timestamp:', timestamp, 'qubits:', qubits);
-      return [timestamp, qubits, qpu.company, qpu];
+      return [timestamp, qubits, qpu.organization, qpu];
     });
 };
 
@@ -185,7 +186,7 @@ const renderChart = () => {
       type: 'scatter',
       data: chartData.map((item, index) => {
         const qpu = item[3];
-        const style = getCompanyStyle(qpu.company);
+        const style = getOrganizationStyle(qpu.organization);
         return {
           value: [item[0], item[1]], // Now correctly interpreted as [time, value]
           symbol: style.symbol,

@@ -2,10 +2,12 @@
   <div style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding: 1rem;">
     <div v-if="!companies || companies.length === 0" 
          style="font-size: 0.875rem; color: #d1d5db; animation: pulse 2s infinite;">
-      Loading legend...
+      Loading legend... {{ typeof companies === 'undefined' ? '(undefined)' : 
+                           !Array.isArray(companies) ? '(not an array)' : 
+                           '(' + companies.length + ' items)' }}
     </div>
-    <div v-for="(company, index) in companies" 
-         :key="company.name" 
+    <div v-for="(organization, index) in companies" 
+         :key="organization.name" 
          class="legend-item"
          :style="{
            display: 'flex',
@@ -30,44 +32,44 @@
       <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;">
         <svg width="20" height="20" viewBox="0 0 24 24" style="position: relative; z-index: 2;">
           <!-- Circle Symbol -->
-          <circle v-if="company.symbol === 'circle'"
+          <circle v-if="organization.symbol === 'circle'"
                   cx="12" cy="12" r="8"
-                  :fill="company.color"
+                  :fill="organization.color"
                   stroke="white"
                   stroke-width="2.5"
                   style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
           
           <!-- Rectangle Symbol -->
-          <rect v-else-if="company.symbol === 'rect'"
+          <rect v-else-if="organization.symbol === 'rect'"
                 x="5" y="5" width="14" height="14"
-                :fill="company.color"
+                :fill="organization.color"
                 stroke="white"
                 stroke-width="2.5"
                 rx="2"
                 style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
           
           <!-- Triangle Symbol -->
-          <polygon v-else-if="company.symbol === 'triangle'"
+          <polygon v-else-if="organization.symbol === 'triangle'"
                    points="12,4 20,18 4,18"
-                   :fill="company.color"
+                   :fill="organization.color"
                    stroke="white"
                    stroke-width="2.5"
                    stroke-linejoin="round"
                    style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
           
           <!-- Diamond Symbol -->
-          <polygon v-else-if="company.symbol === 'diamond'"
+          <polygon v-else-if="organization.symbol === 'diamond'"
                    points="12,3 21,12 12,21 3,12"
-                   :fill="company.color"
+                   :fill="organization.color"
                    stroke="white"
                    stroke-width="2.5"
                    stroke-linejoin="round"
                    style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
           
           <!-- Pin Symbol -->
-          <g v-else-if="company.symbol === 'pin'">
+          <g v-else-if="organization.symbol === 'pin'">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                  :fill="company.color"
+                  :fill="organization.color"
                   stroke="white"
                   stroke-width="2.5"
                   stroke-linejoin="round"
@@ -76,9 +78,9 @@
           </g>
           
           <!-- Arrow Symbol -->
-          <g v-else-if="company.symbol === 'arrow'">
+          <g v-else-if="organization.symbol === 'arrow'">
             <polygon points="2,12 10,4 10,8 22,8 22,16 10,16 10,20"
-                     :fill="company.color"
+                     :fill="organization.color"
                      stroke="white"
                      stroke-width="2.5"
                      stroke-linejoin="round"
@@ -88,7 +90,7 @@
           <!-- Default to Circle for unknown symbols -->
           <circle v-else
                   cx="12" cy="12" r="8"
-                  :fill="company.color"
+                  :fill="organization.color"
                   stroke="white"
                   stroke-width="2.5"
                   style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
@@ -100,13 +102,13 @@
                width: '120%',
                height: '120%',
                borderRadius: '50%',
-               background: `radial-gradient(circle, ${company.color}30 0%, transparent 70%)`,
+               background: `radial-gradient(circle, ${organization.color}30 0%, transparent 70%)`,
                animation: 'glow 3s ease-in-out infinite',
                zIndex: 1
              }"></div>
       </div>
       
-      <!-- Company Name -->
+      <!-- Organization Name -->
       <span :style="{
               fontSize: '0.9rem',
               fontWeight: '600',
@@ -116,7 +118,7 @@
               position: 'relative',
               zIndex: 2
             }">
-        {{ company.name }}
+        {{ organization.name }}
       </span>
       
       <!-- Shine effect overlay -->
@@ -140,11 +142,17 @@
 
 <script setup>
 const props = defineProps({
-  companies: {
+  companies: { // Keeping prop name for API compatibility
     type: Array,
     default: () => []
   }
 });
+
+// Debug - log the companies prop whenever it changes
+import { watch } from 'vue';
+watch(() => props.companies, (newValue) => {
+  console.log('QPULegend - companies prop changed:', newValue);
+}, { immediate: true, deep: true });
 
 const onHover = (event) => {
   const target = event.currentTarget;

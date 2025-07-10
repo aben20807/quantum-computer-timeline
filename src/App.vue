@@ -7,7 +7,7 @@ import QPUDetailTooltip from './components/QPUDetailTooltip.vue';
 import AboutSection from './components/AboutSection.vue';
 
 const qpuData = ref([]);
-const companies = ref([]);
+const organizations = ref([]);  // Will hold organization data for the legend
 const selectedQPU = ref(null);
 const showTooltip = ref(false);
 const tooltipPosition = ref({ x: 0, y: 0 });
@@ -20,12 +20,12 @@ function parsePaperLinks(links) {
   }
 }
 
-function getCompanyColors(data) {
+function getOrganizationStyles(data) {
   const palette = [
     { color: '#42b883', symbol: 'circle' },     // Google - circle
     { color: '#ff9800', symbol: 'rect' },       // IBM - square
     { color: '#2196f3', symbol: 'triangle' },   // USTC - triangle
-    { color: '#e91e63', symbol: 'diamond' },    // Additional companies
+    { color: '#e91e63', symbol: 'diamond' },    // Additional organizations
     { color: '#9c27b0', symbol: 'pin' },
     { color: '#4caf50', symbol: 'arrow' },
     { color: '#f44336', symbol: 'circle' },
@@ -33,20 +33,32 @@ function getCompanyColors(data) {
     { color: '#00bcd4', symbol: 'triangle' },
     { color: '#ffc107', symbol: 'diamond' }
   ];
-  const map = {};
-  let i = 0;
-  data.forEach(qpu => {
-    if (!map[qpu.company]) {
-      map[qpu.company] = palette[i % palette.length];
-      i++;
-    }
-  });
-  return Object.entries(map).map(([name, style]) => ({ name, ...style }));
+  
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.error('getOrganizationStyles: Invalid data:', data);
+    return [];
+  }
+  
+  // Get unique organizations
+  const orgNames = [...new Set(data.filter(qpu => qpu && qpu.organization).map(qpu => qpu.organization))];
+  
+  // Create the organization style objects
+  return orgNames.map((name, index) => ({
+    name,
+    color: palette[index % palette.length].color,
+    symbol: palette[index % palette.length].symbol
+  }));
 }
 
 onMounted(() => {
+  console.log('App mounted, fetching CSV data');
   fetch('/data/qpu_timeline.csv')
-    .then(res => res.text())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Failed to load CSV: ${res.status} ${res.statusText}`);
+      }
+      return res.text();
+    })
     .then(csv => {
       Papa.parse(csv, {
         header: true,
@@ -57,11 +69,19 @@ onMounted(() => {
             qubitCount: Number(row.qubitCount),
             paperLinks: parsePaperLinks(row.paperLinks),
           }));
-          companies.value = getCompanyColors(qpuData.value);
+          organizations.value = getOrganizationStyles(qpuData.value);
           console.log('App.vue - QPU data loaded:', qpuData.value);
-          console.log('App.vue - Companies generated:', companies.value);
+          console.log('App.vue - Organizations generated:', organizations.value);
+          
+          // Ensure the organizations value is correctly structured and not empty
+          if (!organizations.value || !Array.isArray(organizations.value) || organizations.value.length === 0) {
+            console.error('Organizations data is invalid:', organizations.value);
+          }
         }
       });
+    })
+    .catch(error => {
+      console.error('Error loading or parsing CSV data:', error);
     });
 });
 
@@ -121,7 +141,7 @@ function handleTooltipMouseLeave() {
   <div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white flex flex-col items-center">
     <header class="w-full py-8 text-center bg-gradient-to-r from-blue-700 to-purple-700 shadow-lg mb-8">
       <h1 class="text-4xl font-extrabold tracking-tight drop-shadow-lg animate-pulse">Quantum Computer Timeline</h1>
-      <p class="text-lg mt-2 opacity-80">Explore the evolution of QPUs, their companies, and breakthroughs</p>
+      <p class="text-lg mt-2 opacity-80">Explore the evolution of QPUs, their organizations, and breakthroughs</p>
     </header>
     <main class="w-full px-4 flex flex-col gap-8">
       <div class="max-w-7xl mx-auto w-full">
@@ -132,8 +152,12 @@ function handleTooltipMouseLeave() {
       </div>
       <div class="max-w-7xl mx-auto w-full">
         <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
-          <h2 class="text-lg font-medium mb-6 text-center text-gray-200">Companies</h2>
-          <QPULegend :companies="companies" />
+          <h2 class="text-lg font-medium mb-6 text-center text-gray-200">Organizations</h2>
+          <QPULegend :companies="organizations" />
+          <!-- Display debug info if legend is empty -->
+          <div v-if="!organizations || !organizations.length" class="text-center text-red-400 mt-4">
+            <p>Debug: No organizations data available.</p>
+          </div>
         </div>
       </div>
       <transition name="fade">
