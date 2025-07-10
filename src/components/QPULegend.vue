@@ -32,7 +32,7 @@
       
       <!-- SVG Symbol Container -->
       <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;">
-        <svg width="20" height="20" viewBox="0 0 24 24" style="position: relative; z-index: 2;">
+        <svg width="30" height="30" viewBox="0 0 25 25" style="position: relative; z-index: 2;">
           <!-- Circle Symbol -->
           <circle v-if="organization.symbol === 'circle'"
                   cx="12" cy="12" r="8"

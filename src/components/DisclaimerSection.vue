@@ -61,7 +61,7 @@
 
 .disclaimer-content {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1200px;
 }
 
 .disclaimer-text {
