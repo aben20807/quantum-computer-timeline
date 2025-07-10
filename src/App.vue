@@ -68,10 +68,16 @@ onMounted(() => {
 function handlePointHover(qpu, event) {
   selectedQPU.value = qpu;
   showTooltip.value = true;
-  tooltipPosition.value = { x: event.clientX, y: event.clientY };
+  // Position tooltip with some offset to avoid cursor interference
+  tooltipPosition.value = { 
+    x: event.clientX + 15, 
+    y: event.clientY - 10 
+  };
 }
+
 function handleChartLeave() {
   showTooltip.value = false;
+  selectedQPU.value = null;
 }
 </script>
 
@@ -95,7 +101,14 @@ function handleChartLeave() {
         </div>
       </div>
       <transition name="fade">
-        <div v-if="showTooltip" :style="{ position: 'fixed', left: tooltipPosition.x + 'px', top: tooltipPosition.y + 'px', zIndex: 1000 }">
+        <div v-if="showTooltip" 
+             :style="{ 
+               position: 'fixed', 
+               left: tooltipPosition.x + 'px', 
+               top: tooltipPosition.y + 'px', 
+               zIndex: 1000,
+               pointerEvents: 'none'
+             }">
           <QPUDetailTooltip :qpu="selectedQPU" />
         </div>
       </transition>
@@ -106,7 +119,7 @@ function handleChartLeave() {
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.2s;
+  transition: opacity 0.15s ease;
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;

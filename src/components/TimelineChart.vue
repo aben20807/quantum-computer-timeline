@@ -103,11 +103,7 @@ const renderChart = () => {
       textStyle: { color: '#fff', fontWeight: 'bold', fontSize: 22 } 
     },
     tooltip: {
-      trigger: 'item',
-      formatter: (params) => {
-        const qpu = params.data.qpuData;
-        return `<b>${qpu.name}</b><br/>Company: ${qpu.company}<br/>Release: ${qpu.releaseDate}<br/>Qubits: ${qpu.qubitCount}`;
-      }
+      show: false  // Disable built-in tooltip to use our custom tooltip system
     },
     grid: { 
       left: 100, 
@@ -181,10 +177,10 @@ const renderChart = () => {
         };
       }),
       emphasis: {
-        scale: 1.8,
+        scale: 1.3,  // More subtle scaling
         itemStyle: {
-          shadowBlur: 25,
-          shadowColor: 'rgba(255,255,255,0.6)',
+          shadowBlur: 20,
+          shadowColor: 'rgba(255,255,255,0.4)',
           borderWidth: 4
         },
         label: {
@@ -203,11 +199,13 @@ const renderChart = () => {
   
   chartInstance.off('mouseover');
   chartInstance.off('globalout');
+  
   chartInstance.on('mouseover', (params) => {
     if (params.componentType === 'series') {
       emit('point-hover', params.data.qpuData, params.event.event);
     }
   });
+  
   chartInstance.on('globalout', () => {
     emit('mouseleave');
   });
