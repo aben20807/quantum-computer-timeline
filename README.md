@@ -23,7 +23,7 @@ An interactive visualization tool that tracks the evolution of quantum processin
 
 ## Data Structure
 
-The application uses a CSV file with the following structure:
+The application uses a CSV file (`public/data/qpu_timeline.csv`) with the following structure:
 
 | Field | Description |
 |-------|-------------|

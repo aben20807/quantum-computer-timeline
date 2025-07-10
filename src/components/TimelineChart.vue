@@ -3,7 +3,7 @@
     <div
       class="relative bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10"
       ref="chartContainer"
-      style="width: 100%; height: 520px; min-height: 440px;"
+      style="width: 100%; height: 600px; min-height: 500px;"
     ></div>
   </div>
 </template>
@@ -17,6 +17,10 @@ const props = defineProps({
   data: {
     type: Array,
     default: () => []
+  },
+  organizationStyles: {
+    type: Array,
+    default: () => []
   }
 });
 
@@ -24,22 +28,25 @@ const chartContainer = ref(null);
 let chartInstance = null;
 
 const getOrganizationStyle = (organization) => {
-  const palette = [
-    { color: '#42b883', symbol: 'circle' },     // Google - circle
-    { color: '#ff9800', symbol: 'rect' },       // IBM - square
-    { color: '#2196f3', symbol: 'triangle' },   // USTC - triangle
-    { color: '#e91e63', symbol: 'diamond' },    // Additional organizations
-    { color: '#9c27b0', symbol: 'pin' },
-    { color: '#4caf50', symbol: 'arrow' },
-    { color: '#f44336', symbol: 'circle' },
-    { color: '#607d8b', symbol: 'rect' },
-    { color: '#00bcd4', symbol: 'triangle' },
-    { color: '#ffc107', symbol: 'diamond' }
+  // Use the organizationStyles passed from the parent component
+  if (props.organizationStyles && props.organizationStyles.length > 0) {
+    const style = props.organizationStyles.find(s => s.name === organization);
+    if (style) {
+      return { color: style.color, symbol: style.symbol };
+    }
+  }
+  
+  // Fallback to default palette if no matching style is found
+  const defaultPalette = [
+    { color: '#42b883', symbol: 'circle' },
+    { color: '#ff9800', symbol: 'rect' },
+    { color: '#2196f3', symbol: 'triangle' },
+    { color: '#e91e63', symbol: 'diamond' }
   ];
-  // Still use 'organization' as the field name since that's what exists in the data
+  
   const organizations = [...new Set(props.data.map(qpu => qpu.organization))];
   const idx = organizations.indexOf(organization);
-  return palette[idx % palette.length];
+  return defaultPalette[idx % defaultPalette.length];
 };
 
 const getChartData = () => {
@@ -99,6 +106,7 @@ const renderChart = () => {
 
   // Calculate min and max years from the data for proper axis bounds
   const timestamps = chartData.map(item => item[0]);
+  const qubitCounts = chartData.map(item => item[1]);
   const minTimestamp = Math.min(...timestamps);
   const maxTimestamp = Math.max(...timestamps);
   const minYear = new Date(minTimestamp).getFullYear();
@@ -107,6 +115,10 @@ const renderChart = () => {
   // Create year boundaries for the axis
   const startOfAxis = new Date(minYear, 0, 1).getTime();
   const endOfAxis = new Date(maxYear + 1, 0, 1).getTime();
+  
+  // Calculate min and max qubit counts for y-axis
+  const minQubitCount = Math.min(...qubitCounts);
+  const maxQubitCount = Math.max(...qubitCounts);
 
   const option = {
     title: { 
@@ -121,9 +133,10 @@ const renderChart = () => {
     grid: { 
       left: 100, 
       right: 60, 
-      top: 100, // Increased top padding from 80 to 100
-      bottom: 100,
-      containLabel: true
+      top: 80, // Reduced top padding to increase chart area
+      bottom: 80, // Reduced bottom padding to increase chart area
+      containLabel: true,
+      height: '85%' // Increased height to utilize larger chart container
     },
     xAxis: {
       type: 'time', // Back to time type for correct data positioning
@@ -167,12 +180,31 @@ const renderChart = () => {
       axisLine: { lineStyle: { color: '#fff' } }
     },
     yAxis: {
-      type: 'value',
-      name: 'Qubit Count',
+      type: 'log', // Changed from 'value' to 'log' for logarithmic scale
+      name: 'Qubit Count (log scale)',
       nameLocation: 'middle',
       nameGap: 50,
       nameTextStyle: { color: '#fff', fontWeight: 'bold' },
-      axisLabel: { color: '#fff' },
+      min: Math.max(1, minQubitCount * 0.8), // Ensure minimum is at least 1 for log scale
+      max: maxQubitCount * 1.2, // Add 20% padding at the top
+      logBase: 10, // Base-10 logarithmic scale
+      axisLabel: { 
+        color: '#fff',
+        formatter: (value) => {
+          // Format as integer without decimal places
+          return Math.round(value).toString();
+        }
+      },
+      minorTick: {
+        show: true
+      },
+      minorSplitLine: {
+        show: true,
+        lineStyle: {
+          color: 'rgba(255, 255, 255, 0.05)',
+          width: 0.5
+        }
+      },
       splitLine: { 
         lineStyle: { 
           color: 'rgba(255, 255, 255, 0.1)', // Lighter grid lines

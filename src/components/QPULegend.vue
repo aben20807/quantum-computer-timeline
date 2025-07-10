@@ -87,6 +87,41 @@
                      style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
           </g>
           
+          <!-- Rounded Rectangle Symbol -->
+          <rect v-else-if="organization.symbol === 'roundRect'"
+                x="5" y="5" width="14" height="14"
+                :fill="organization.color"
+                stroke="white"
+                stroke-width="2.5"
+                rx="5" ry="5"
+                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+          
+          <!-- Empty Circle Symbol -->
+          <circle v-else-if="organization.symbol === 'emptyCircle'"
+                  cx="12" cy="12" r="8"
+                  fill="transparent"
+                  :stroke="organization.color"
+                  stroke-width="3"
+                  style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+          
+          <!-- Empty Rectangle Symbol -->
+          <rect v-else-if="organization.symbol === 'emptyRect'"
+                x="5" y="5" width="14" height="14"
+                fill="transparent"
+                :stroke="organization.color"
+                stroke-width="3"
+                rx="2"
+                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+          
+          <!-- Custom Path Symbol -->
+          <path v-else-if="organization.symbol && organization.symbol.startsWith('path://')"
+                :d="organization.symbol.replace('path://', '')"
+                :fill="organization.color"
+                stroke="white"
+                stroke-width="1.5"
+                transform="scale(0.75) translate(4, 4)"
+                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                
           <!-- Default to Circle for unknown symbols -->
           <circle v-else
                   cx="12" cy="12" r="8"

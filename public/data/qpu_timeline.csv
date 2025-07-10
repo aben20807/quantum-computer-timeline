@@ -1,4 +1,32 @@
 name,organization,releaseDate,qubitCount,externalLink,description
-Sycamore,Google,2019-10-23,53,"[{""title"":""Nature Paper"",""url"":""https://www.nature.com/articles/s41586-019-1666-5""}]","First quantum supremacy claim"
-Eagle,IBM,2021-11-16,127,"[{""title"":""IBM Blog"",""url"":""https://www.ibm.com/blogs/research/2021/11/quantum-processor-eagle/""}]","First 100+ qubit QPU"
-Zuchongzhi,USTC,2021-05-07,66,"[{""title"":""Science Paper"",""url"":""https://www.science.org/doi/10.1126/science.abe8770""}]","Chinese quantum advantage experiment"
+Q 17,IBM,2017-05-17,17,"[{""title"":""List of quantum processors (Q17)"",""url"":""https://en.wikipedia.org/wiki/List_of_quantum_processors""}]",
+Q 20 Tokyo,IBM,2017-11-10,20,"[{""title"":""List of quantum processors (Q20 Austin)"",""url"":""https://en.wikipedia.org/wiki/List_of_quantum_processors""}]",
+Q 53,IBM,2019-09-18,53,"[{""title"":""ibm.com"",""url"":""https://web.archive.org/web/20241229122249/https://newsroom.ibm.com/2019-09-18-IBM-Opens-Quantum-Computation-Center-in-New-York-Brings-Worlds-Largest-Fleet-of-Quantum-Computing-Systems-Online-Unveils-New-53-Qubit-Quantum-System-for-Broad-Use""}]",
+Eagle,IBM,2021-11-16,127,"[{""title"":""ibm.com"",""url"":""https://www.ibm.com/quantum/blog/127-qubit-quantum-processor-eagle""}]",
+Osprey,IBM,2022-11-09,433,"[{""title"":""ibm.com"",""url"":""https://newsroom.ibm.com/2022-11-09-IBM-Unveils-400-Qubit-Plus-Quantum-Processor-and-Next-Generation-IBM-Quantum-System-Two""}]",
+Heron,IBM,2023-12-04,133,"[{""title"":""ibm.com"",""url"":""https://www.ibm.com/quantum/blog/quantum-roadmap-2033""}]",
+Condor,IBM,2023-12-04,1121,"[{""title"":""ibm.com"",""url"":""https://www.ibm.com/quantum/blog/quantum-roadmap-2033""}]",
+Heron R2,IBM,2024-11-13,156,"[{""title"":""IBM Heron R2"",""url"":""https://newsroom.ibm.com/2024-11-13-ibm-launches-its-most-advanced-quantum-computers%2C-fueling-new-scientific-value-and-progress-towards-quantum-advantage""}]",
+Bristlecone,Google,2018-03-05,72,"[{""title"":""google.com"", ""url"":""https://research.google/blog/a-preview-of-bristlecone-googles-new-quantum-processor/""}]",
+Sycamore,Google,2019-10-23,53,"[{""title"":""paper"", ""url"":""https://www.nature.com/articles/s41586-019-1666-5""}]",
+Willow,Google,2024-12-09,105,"[{""title"":""google.com"", ""url"":""https://blog.google/technology/research/google-willow-quantum-chip/""}]",
+Majorana 1,Microsoft,2025-02-19,8,"[{""title"":""paper"", ""url"":""https://www.nature.com/articles/s41586-024-08445-2""}]",
+Ocelot,Amazon,2025-02-27,5,"[{""title"":""amazon.com"", ""url"":""https://www.aboutamazon.com/news/aws/quantum-computing-aws-ocelot-chip""}]",a new quantum computing chip that can reduce the costs of implementing quantum error correction
+Neutral-Atom System,Atom Computing,2023-10-24,1180,"[{""title"":""atom-computing.com"", ""url"":""https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/""}]",
+28‑qubit System,Microsoft/Atom Computing,2024-11-18,28,"[{""title"":""microsoft.com"", ""url"": ""https://azure.microsoft.com/en-us/blog/quantum/2024/11/19/microsoft-and-atom-computing-offer-a-commercial-quantum-machine-with-the-largest-number-of-entangled-logical-qubits-on-record/""}, {""title"":""paper"", ""url"":""https://arxiv.org/abs/2411.11822""}]",entangled 24 logical qubits
+50‑qubit System,IQM/VTT,2025-03-04,50,"[{""title"":""iqm.com"", ""url"":""https://meetiqm.com/press-releases/vtt-and-iqm-launch-first-50-qubit-quantum-computer-developed-in-europe/""}]",
+Ankaa-2,Rigetti,2024-01,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/news/rigetti-announces-public-availability-of-ankaa-2-system-with-a-2-5x-performance-improvement-compared-to-previous-qpus""}]",
+Ankaa-3,Rigetti,2024-12-23,84,"[{""title"":""rigetti.com"", ""url"": ""https://investors.rigetti.com/news-releases/news-release-details/rigetti-computing-launches-84-qubit-ankaatm-3-system-achieves""}]",
+Zuchongzhi 1.0,USTC,2021-05-06,62,"[{""title"":""postquantum.com"", ""url"":""https://postquantum.com/industry-news/zuchongzhi-1/""}, {""title"":""paper"", ""url"": ""https://www.science.org/doi/10.1126/science.abg7812""}]",
+Zuchongzhi 2.1,USTC,2021-09,66,"[{""title"":""paper"", ""url"":""https://www.sciencedirect.com/science/article/pii/S2095927321006733""}]",
+Zuchongzhi 3.0,USTC,2025-03-03,105,"[{""title"":""paper"", ""url"":""https://www.nature.com/nature-index/article/10.1103/physrevlett.134.090601""}]",
+H1-1,Quantinuum,2020-10-29,10,"[{""title"":""honeywell.com"", ""url"":""https://www.honeywell.com/us/en/press/2020/10/honeywell-releases-next-generation-of-quantum-computer""}]","Honeywell's next-generation quantum computer, quantum volume 128 with trapped-ion technology"
+H1-2,Quantinuum,2021-12-29,12,"[{""title"":""quantinuum.com"", ""url"":""https://www.quantinuum.com/blog/demonstrating-benefits-of-quantum-upgradable-design-strategy-system-model-h1-2-first-to-prove-2-048-quantum-volume""}]","Prove 2,048 Quantum Volume"
+H1-1 (upgraded),Quantinuum,2022-06-13,20,"[{""title"":""quantinuum.com"", ""url"":""https://www.quantinuum.com/press-releases/quantinuum-completes-hardware-upgrade-achieves-20-fully-connected-qubits""}, {""paper"":""https://arxiv.org/abs/2206.06290""}]",up to 20 qubits and a two-qubit gate depth of up to 159
+H2-1,Quantinuum,2024-06-05,56,"[{""title"":""quantinuum.com"", ""url"":""https://www.quantinuum.com/press-releases/quantinuum-launches-industry-first-trapped-ion-56-qubit-quantum-computer-that-challenges-the-worlds-best-supercomputers""}]",
+One,D‑Wave,2011-05-11,128,"[{""title"":""paper"", ""url"":""https://www.nature.com/articles/nature10012""}]",quantum annealing
+Two,D‑Wave,2013-05-16,512,"[{""title"":""news"", ""url"":""https://spacenews.com/d-wave-twotm-quantum-computer-selected-for-new-quantum-artificial-intelligence-initiative/""}]",quantum annealing
+2X,D‑Wave,2015-08-20,1000,"[{""title"":""paper"", ""url"":""https://arxiv.org/abs/1508.05087""}]",quantum annealing
+2000Q,D‑Wave,,2048,https://www.hpcwire.com/off-the-wire/d-wave-introduces-2000q-quantum-computer/,quantum annealing
+Advantage,D‑Wave,2019-02-17,5760,"[{""title"":""dwave.com"", ""url"":""https://web.archive.org/web/20190319213109/https://www.dwavesys.com/press-releases/d-wave-previews-next-generation-quantum-computing-platform""}]","quantum annealing, increasing the per-qubit connections to 15"
+Advantage2,D‑Wave,2025-05-20,4400,"[{""title"":""dwave.com"", ""url"":""https://www.dwavequantum.com/company/newsroom/press-release/d-wave-announces-general-availability-of-advantage2-quantum-computer-its-most-advanced-and-performant-system/""}]","quantum annealing, increasing the per-qubit connections to 20"
