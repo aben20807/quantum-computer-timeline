@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// Get repository name from package.json for GitHub Pages base path
-// This assumes your repository name is "QPU"
-// If your repo has a different name, you'll need to modify this
+// For GitHub Pages deployment, we need to set the correct base path
+// This should match your repository name - update it if your repository
+// has a different name than "quantum-computer-timeline"
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: process.env.NODE_ENV === 'production' ? '/QPU/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/quantum-computer-timeline/' : '/',
 })
