@@ -6,7 +6,7 @@
                            !Array.isArray(companies) ? '(not an array)' : 
                            '(' + companies.length + ' items)' }}
     </div>
-    <div v-for="(organization, index) in companies" 
+    <div v-for="(organization, index) in sortedCompanies" 
          :key="organization.name" 
          class="legend-item"
          :style="{
@@ -146,17 +146,20 @@
       </div>
       
       <!-- Organization Name -->
-      <span :style="{
+      <div :style="{
               fontSize: '0.9rem',
               fontWeight: '600',
               color: '#ffffff',
               textShadow: '0 1px 3px rgba(0,0,0,0.7)',
               letterSpacing: '0.025em',
               position: 'relative',
-              zIndex: 2
+              zIndex: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start'
             }">
-        {{ organization.name }}
-      </span>
+        <span>{{ organization.name }} ({{ getQpuCount(organization.name) }})</span>
+      </div>
       
       <!-- Shine effect overlay -->
       <div :style="{
@@ -186,10 +189,45 @@ const props = defineProps({
   visibleOrganizations: {
     type: Set,
     default: () => new Set()
+  },
+  qpuData: {
+    type: Array,
+    default: () => []
   }
 });
 
 const emit = defineEmits(['toggle-organization']);
+
+// Computed property to sort organizations
+import { computed } from 'vue';
+
+// Sort organizations by number of QPUs and alphabetically by name
+const sortedCompanies = computed(() => {
+  if (!props.companies || !Array.isArray(props.companies)) return [];
+  
+  // Count QPUs for each organization
+  const orgCounts = {};
+  if (props.qpuData && Array.isArray(props.qpuData)) {
+    props.qpuData.forEach(qpu => {
+      if (qpu.organization) {
+        orgCounts[qpu.organization] = (orgCounts[qpu.organization] || 0) + 1;
+      }
+    });
+  }
+  
+  return [...props.companies].sort((a, b) => {
+    // First, sort by number of QPUs (descending)
+    const countA = orgCounts[a.name] || 0;
+    const countB = orgCounts[b.name] || 0;
+    
+    if (countB !== countA) {
+      return countB - countA; // Descending order
+    }
+    
+    // If equal count, sort alphabetically by name
+    return a.name.localeCompare(b.name);
+  });
+});
 
 // Debug - log the companies prop whenever it changes
 import { watch } from 'vue';
@@ -228,6 +266,13 @@ const onLeave = (event) => {
 // Function to toggle organization visibility
 const toggleOrganization = (orgName) => {
   emit('toggle-organization', orgName);
+};
+
+// Helper function to get the number of QPUs for an organization
+const getQpuCount = (orgName) => {
+  if (!props.qpuData || !Array.isArray(props.qpuData)) return 0;
+  
+  return props.qpuData.filter(qpu => qpu.organization === orgName).length;
 };
 </script>
 
@@ -296,10 +341,19 @@ const toggleOrganization = (orgName) => {
     min-width: 0 !important;
   }
   
-  .legend-item span {
+  .legend-item div {
     font-size: 0.75rem !important;
     text-align: center !important;
     max-width: 80px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    align-items: center !important;
+  }
+  
+  .legend-item div span {
+    font-size: 0.7rem !important;
+    text-align: center !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;

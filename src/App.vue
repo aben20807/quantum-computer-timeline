@@ -236,6 +236,7 @@ function resetOrganizationVisibility() {
           <QPULegend 
             :companies="organizations" 
             :visible-organizations="visibleOrganizations"
+            :qpu-data="qpuData"
             @toggle-organization="toggleOrganizationVisibility" 
           />
           <!-- Display debug info if legend is empty -->
