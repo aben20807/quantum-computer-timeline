@@ -22,7 +22,16 @@ function parsePaperLinks(links) {
 
 function getCompanyColors(data) {
   const palette = [
-    '#42b883', '#ff9800', '#2196f3', '#e91e63', '#9c27b0', '#4caf50', '#f44336', '#607d8b', '#00bcd4', '#ffc107'
+    { color: '#42b883', symbol: 'circle' },     // Google - circle
+    { color: '#ff9800', symbol: 'rect' },       // IBM - square
+    { color: '#2196f3', symbol: 'triangle' },   // USTC - triangle
+    { color: '#e91e63', symbol: 'diamond' },    // Additional companies
+    { color: '#9c27b0', symbol: 'pin' },
+    { color: '#4caf50', symbol: 'arrow' },
+    { color: '#f44336', symbol: 'circle' },
+    { color: '#607d8b', symbol: 'rect' },
+    { color: '#00bcd4', symbol: 'triangle' },
+    { color: '#ffc107', symbol: 'diamond' }
   ];
   const map = {};
   let i = 0;
@@ -32,7 +41,7 @@ function getCompanyColors(data) {
       i++;
     }
   });
-  return Object.entries(map).map(([name, color]) => ({ name, color }));
+  return Object.entries(map).map(([name, style]) => ({ name, ...style }));
 }
 
 onMounted(() => {
@@ -49,6 +58,8 @@ onMounted(() => {
             paperLinks: parsePaperLinks(row.paperLinks),
           }));
           companies.value = getCompanyColors(qpuData.value);
+          console.log('App.vue - QPU data loaded:', qpuData.value);
+          console.log('App.vue - Companies generated:', companies.value);
         }
       });
     });
@@ -70,14 +81,16 @@ function handleChartLeave() {
       <h1 class="text-4xl font-extrabold tracking-tight drop-shadow-lg animate-pulse">Quantum Computer Timeline</h1>
       <p class="text-lg mt-2 opacity-80">Explore the evolution of QPUs, their companies, and breakthroughs</p>
     </header>
-    <main class="w-full max-w-5xl px-4 flex flex-col gap-8">
-      <AboutSection />
-      <div class="flex flex-col md:flex-row gap-8 items-start">
-        <div class="flex-1 bg-white/10 rounded-xl p-6 shadow-lg backdrop-blur-md">
-          <TimelineChart :data="qpuData" @point-hover="handlePointHover" @mouseleave="handleChartLeave" />
-        </div>
-        <div class="w-full md:w-64 bg-white/10 rounded-xl p-6 shadow-lg backdrop-blur-md">
-          <h2 class="text-xl font-bold mb-4">Legend</h2>
+    <main class="w-full px-4 flex flex-col gap-8">
+      <div class="max-w-5xl mx-auto w-full">
+        <AboutSection />
+      </div>
+      <div class="w-full">
+        <TimelineChart :data="qpuData" @point-hover="handlePointHover" @mouseleave="handleChartLeave" />
+      </div>
+      <div class="max-w-4xl mx-auto w-full">
+        <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
+          <h2 class="text-lg font-medium mb-6 text-center text-gray-200">Companies</h2>
           <QPULegend :companies="companies" />
         </div>
       </div>

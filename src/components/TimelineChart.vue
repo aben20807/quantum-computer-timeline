@@ -1,5 +1,11 @@
 <template>
-  <div class="w-full h-96 relative border border-gray-300" ref="chartContainer" style="width: 100%; height: 384px; min-height: 384px; min-width: 600px;"></div>
+  <div class="w-full px-4 py-6">
+    <div
+      class="relative border border-gray-300 bg-white/5 rounded-xl shadow-lg mx-auto"
+      ref="chartContainer"
+      style="width: 100%; max-width: 1400px; height: 500px; min-height: 420px;"
+    ></div>
+  </div>
 </template>
 
 <script setup>
@@ -17,9 +23,18 @@ const props = defineProps({
 const chartContainer = ref(null);
 let chartInstance = null;
 
-const getCompanyColor = (company) => {
+const getCompanyStyle = (company) => {
   const palette = [
-    '#42b883', '#ff9800', '#2196f3', '#e91e63', '#9c27b0', '#4caf50', '#f44336', '#607d8b', '#00bcd4', '#ffc107'
+    { color: '#42b883', symbol: 'circle' },     // Google - circle
+    { color: '#ff9800', symbol: 'rect' },       // IBM - square
+    { color: '#2196f3', symbol: 'triangle' },   // USTC - triangle
+    { color: '#e91e63', symbol: 'diamond' },    // Additional companies
+    { color: '#9c27b0', symbol: 'pin' },
+    { color: '#4caf50', symbol: 'arrow' },
+    { color: '#f44336', symbol: 'circle' },
+    { color: '#607d8b', symbol: 'rect' },
+    { color: '#00bcd4', symbol: 'triangle' },
+    { color: '#ffc107', symbol: 'diamond' }
   ];
   const companies = [...new Set(props.data.map(qpu => qpu.company))];
   const idx = companies.indexOf(company);
@@ -90,7 +105,7 @@ const renderChart = () => {
     tooltip: {
       trigger: 'item',
       formatter: (params) => {
-        const qpu = params.data[3];
+        const qpu = params.data.qpuData;
         return `<b>${qpu.name}</b><br/>Company: ${qpu.company}<br/>Release: ${qpu.releaseDate}<br/>Qubits: ${qpu.qubitCount}`;
       }
     },
@@ -130,20 +145,52 @@ const renderChart = () => {
     },
     series: [{
       type: 'scatter',
-      data: chartData,
-      symbolSize: 20,
-      itemStyle: {
-        color: (params) => getCompanyColor(params.data[2]),
-        borderColor: '#fff',
-        borderWidth: 2,
-        shadowBlur: 10,
-        shadowColor: 'rgba(0,0,0,0.3)'
-      },
+      data: chartData.map((item, index) => {
+        const qpu = item[3];
+        const style = getCompanyStyle(qpu.company);
+        return {
+          value: [item[0], item[1]],
+          symbol: style.symbol,
+          symbolSize: 24,
+          itemStyle: {
+            color: style.color,
+            borderColor: '#fff',
+            borderWidth: 3,
+            shadowBlur: 15,
+            shadowColor: 'rgba(0,0,0,0.4)'
+          },
+          qpuData: qpu,
+          label: {
+            show: true,
+            position: 'top',
+            formatter: qpu.name,
+            color: '#fff',
+            fontSize: 11,
+            fontWeight: 'bold',
+            distance: 8,
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            borderColor: style.color,
+            borderWidth: 1,
+            borderRadius: 4,
+            padding: [2, 6],
+            textShadowColor: 'rgba(0,0,0,0.8)',
+            textShadowBlur: 2,
+            textShadowOffsetX: 1,
+            textShadowOffsetY: 1
+          }
+        };
+      }),
       emphasis: {
-        scale: 1.5,
+        scale: 1.8,
         itemStyle: {
-          shadowBlur: 20,
-          shadowColor: 'rgba(255,255,255,0.5)'
+          shadowBlur: 25,
+          shadowColor: 'rgba(255,255,255,0.6)',
+          borderWidth: 4
+        },
+        label: {
+          show: true,
+          fontSize: 12,
+          fontWeight: 'bold'
         }
       }
     }],
@@ -158,7 +205,7 @@ const renderChart = () => {
   chartInstance.off('globalout');
   chartInstance.on('mouseover', (params) => {
     if (params.componentType === 'series') {
-      emit('point-hover', params.data[3], params.event.event);
+      emit('point-hover', params.data.qpuData, params.event.event);
     }
   });
   chartInstance.on('globalout', () => {
