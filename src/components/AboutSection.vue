@@ -1,5 +1,5 @@
 <template>
-  <section class="about-section">
+  <section class="about-section bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
     <h2 class="about-title">About This Project</h2>
     <p class="about-text">
       This website visualizes the timeline of quantum computer development using real QPU data. 
@@ -14,10 +14,11 @@
 
 <style scoped>
 .about-section {
-  margin: 2rem 0;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-  border: 1px solid rgba(255,255,255,0.2);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   border-radius: 1rem;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);

@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full px-4 py-6">
+  <div class="w-full py-2">
     <div
-      class="relative border border-gray-300 bg-white/5 rounded-xl shadow-lg"
+      class="relative bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10"
       ref="chartContainer"
-      style="width: 100%; height: 500px; min-height: 420px;"
+      style="width: 100%; height: 520px; min-height: 440px;"
     ></div>
   </div>
 </template>
@@ -110,7 +110,8 @@ const renderChart = () => {
   const option = {
     title: { 
       text: 'Quantum Computer Timeline', 
-      left: 'center', 
+      left: 'center',
+      top: 20, // Add specific top padding for the title
       textStyle: { color: '#fff', fontWeight: 'bold', fontSize: 22 } 
     },
     tooltip: {
@@ -119,7 +120,7 @@ const renderChart = () => {
     grid: { 
       left: 100, 
       right: 60, 
-      top: 80, 
+      top: 100, // Increased top padding from 80 to 100
       bottom: 100,
       containLabel: true
     },
@@ -155,7 +156,13 @@ const renderChart = () => {
           return date.getMonth() === 0 && date.getDate() === 1;
         }
       },
-      splitLine: { show: false },
+      splitLine: { 
+        show: true,
+        lineStyle: { 
+          color: 'rgba(255, 255, 255, 0.1)', // Lighter grid lines
+          width: 0.5 // Thinner grid lines
+        }
+      },
       axisLine: { lineStyle: { color: '#fff' } }
     },
     yAxis: {
@@ -165,7 +172,12 @@ const renderChart = () => {
       nameGap: 50,
       nameTextStyle: { color: '#fff', fontWeight: 'bold' },
       axisLabel: { color: '#fff' },
-      splitLine: { lineStyle: { color: '#444' } },
+      splitLine: { 
+        lineStyle: { 
+          color: 'rgba(255, 255, 255, 0.1)', // Lighter grid lines
+          width: 0.5 // Thinner grid lines
+        } 
+      },
       axisLine: { lineStyle: { color: '#fff' } },
       axisTick: { lineStyle: { color: '#fff' } }
     },

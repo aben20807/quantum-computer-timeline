@@ -124,13 +124,13 @@ function handleTooltipMouseLeave() {
       <p class="text-lg mt-2 opacity-80">Explore the evolution of QPUs, their companies, and breakthroughs</p>
     </header>
     <main class="w-full px-4 flex flex-col gap-8">
-      <div class="max-w-5xl mx-auto w-full">
+      <div class="max-w-7xl mx-auto w-full">
         <AboutSection />
       </div>
-      <div class="max-w-4xl mx-auto w-full">
+      <div class="max-w-7xl mx-auto w-full">
         <TimelineChart :data="qpuData" @point-hover="handlePointHover" @mouseleave="handleChartLeave" />
       </div>
-      <div class="max-w-4xl mx-auto w-full">
+      <div class="max-w-7xl mx-auto w-full">
         <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
           <h2 class="text-lg font-medium mb-6 text-center text-gray-200">Companies</h2>
           <QPULegend :companies="companies" />
