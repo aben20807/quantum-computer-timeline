@@ -190,12 +190,12 @@ const renderChart = () => {
         return {
           value: [item[0], item[1]], // Now correctly interpreted as [time, value]
           symbol: style.symbol,
-          symbolSize: 24,
+          symbolSize: 18, // Reduced from 24 to 18 for smaller data points
           itemStyle: {
             color: style.color,
             borderColor: '#fff',
-            borderWidth: 3,
-            shadowBlur: 15,
+            borderWidth: 2, // Reduced from 3 to 2 for proportionate border
+            shadowBlur: 10, // Reduced from 15 to 10 for proportionate shadow
             shadowColor: 'rgba(0,0,0,0.4)'
           },
           qpuData: qpu,
@@ -204,14 +204,14 @@ const renderChart = () => {
             position: 'top',
             formatter: qpu.name,
             color: '#fff',
-            fontSize: 11,
+            fontSize: 10, // Slightly reduced font size
             fontWeight: 'bold',
-            distance: 8,
+            distance: 6,  // Reduced distance to match smaller points
             backgroundColor: 'rgba(0,0,0,0.7)',
             borderColor: style.color,
             borderWidth: 1,
-            borderRadius: 4,
-            padding: [2, 6],
+            borderRadius: 3, // Slightly smaller radius
+            padding: [2, 5], // Slightly smaller padding
             textShadowColor: 'rgba(0,0,0,0.8)',
             textShadowBlur: 2,
             textShadowOffsetX: 1,
@@ -222,9 +222,9 @@ const renderChart = () => {
       emphasis: {
         scale: 1.3,  // More subtle scaling
         itemStyle: {
-          shadowBlur: 20,
+          shadowBlur: 15, // Reduced from 20 to 15 to match the smaller point size
           shadowColor: 'rgba(255,255,255,0.4)',
-          borderWidth: 4
+          borderWidth: 3  // Reduced from 4 to 3 to match the smaller point size
         },
         label: {
           show: true,

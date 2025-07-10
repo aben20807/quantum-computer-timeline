@@ -12,7 +12,7 @@
       <h3 class="disclaimer-subtitle">Contribute to Data Accuracy</h3>
       <p class="disclaimer-text">
         If you find any errors or have more accurate/updated information, please submit an issue or pull request on 
-        <a href="https://github.com/aben20807/QPU" target="_blank" class="disclaimer-link">GitHub</a>. 
+        <a href="https://github.com/aben20807/quantum-computer-timeline" target="_blank" class="disclaimer-link">GitHub</a>. 
         For substantial additions or corrections, please include references to verifiable sources.
       </p>
       

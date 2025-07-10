@@ -1,4 +1,4 @@
-# Quantum Computer Timeline Visualization
+# Quantum Computer Timeline
 
 ![Quantum Computer Timeline](public/qpu-social-cover.svg)
 
@@ -46,80 +46,6 @@ The quantum computing field is rapidly evolving, and despite our best efforts to
 
 This project aims to provide an educational visualization of quantum computing progress rather than an authoritative technical reference. All information should be verified with original sources when used for research, academic, or business purposes.
 
-## Project Structure
-
-```plaintext
-QPU/
-├── public/
-│   ├── data/
-│   │   └── qpu_timeline.csv     # Main data source
-│   ├── enhanced-qpu-favicon.svg # Website favicon
-│   └── qpu-social-cover.svg     # Social media preview image
-├── src/
-│   ├── components/
-│   │   ├── AboutSection.vue     # Project information section
-│   │   ├── QPUDetailTooltip.vue # Tooltip showing QPU details
-│   │   ├── QPULegend.vue        # Legend showing organizations
-│   │   └── TimelineChart.vue    # Main visualization component
-│   ├── App.vue                  # Main application component
-│   ├── main.js                  # Application entry point
-│   └── style.css                # Global styles
-└── index.html                   # HTML entry point
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/yourusername/qpu-timeline.git
-   cd qpu-timeline
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   # or
-   yarn
-   ```
-
-3. Start the development server:
-
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. Open your browser and navigate to `http://localhost:5173`
-
-### Building for Production
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-The built files will be in the `dist` directory, ready to be deployed to any static hosting service.
-
-## Adding/Editing Quantum Computer Data
-
-To add or update quantum computer information:
-
-1. Edit the CSV file at `public/data/qpu_timeline.csv`
-2. Follow the existing format for consistency
-3. For paper links, use the JSON array format: `[{"title":"Paper Title","url":"https://example.com"}]`
-4. The application will automatically update with the new data
-
 ## Contributing
 
 We welcome contributions to improve both the application and the dataset. Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on:
@@ -130,20 +56,13 @@ We welcome contributions to improve both the application and the dataset. Please
 - Development setup
 - Pull request process
 
-## Customizing the Visualization
-
-The color scheme and symbols for different organizations can be customized in the `getOrganizationStyles` function in `App.vue`. The palette array contains color-symbol pairs that are assigned to each organization.
-
-## Progressive Web App
-
-This application supports installation as a Progressive Web App (PWA). When visiting the website on a compatible browser, you can install it on your device for offline access.
-
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
 - Data compiled from public research papers and announcements
 - Built with Vue 3 and modern web technologies
 - Visualization powered by Apache ECharts
+- GitHub Copilot implemented most of the features

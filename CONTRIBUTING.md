@@ -59,11 +59,18 @@ We welcome improvements to the application itself:
 
 ## Development Setup
 
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Build the source
+
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/qpu-timeline.git
-   cd qpu-timeline
+   git clone https://github.com/yourusername/quantum-computer-timeline.git
+   cd quantum-computer-timeline
    ```
 
 2. Install dependencies:
@@ -83,6 +90,19 @@ We welcome improvements to the application itself:
    ```
 
 4. Open your browser and navigate to `http://localhost:5173`
+
+### Adding/Editing Quantum Computer Data
+
+To add or update quantum computer information:
+
+1. Edit the CSV file at `public/data/qpu_timeline.csv`
+2. Follow the existing format for consistency
+3. For paper links, use the JSON array format: `[{"title":"paper","url":"https://example.com"}]`
+4. The application will automatically update with the new data
+
+### Customizing the Visualization
+
+The color scheme and symbols for different organizations can be customized in the `getOrganizationStyles` function in `App.vue`. The palette array contains color-symbol pairs that are assigned to each organization.
 
 ## Pull Request Process
 
