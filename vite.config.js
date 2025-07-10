@@ -9,4 +9,14 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   base: process.env.NODE_ENV === 'production' ? '/quantum-computer-timeline/' : '/',
+  
+  // Ensure static assets are handled correctly
+  publicDir: 'public',
+  build: {
+    assetsDir: 'assets',
+    // Explicitly copy files from public to dist
+    copyPublicDir: true,
+    // Add this to help with debugging
+    sourcemap: true
+  }
 })

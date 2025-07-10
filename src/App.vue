@@ -75,7 +75,7 @@ function getOrganizationStyles(data) {
 onMounted(() => {
   console.log('App mounted, fetching CSV data');
   // Use the data file directly from the data directory
-  fetch('/data/qpu_timeline.csv')
+  fetch('./data/qpu_timeline.csv')
     .then(res => {
       if (!res.ok) {
         throw new Error(`Failed to load CSV: ${res.status} ${res.statusText}`);
