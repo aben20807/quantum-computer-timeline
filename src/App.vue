@@ -68,14 +68,50 @@ onMounted(() => {
 function handlePointHover(qpu, event) {
   selectedQPU.value = qpu;
   showTooltip.value = true;
-  // Position tooltip with some offset to avoid cursor interference
-  tooltipPosition.value = { 
-    x: event.clientX + 15, 
-    y: event.clientY - 10 
-  };
+  
+  // Calculate position with bounds checking
+  const tooltipWidth = 280; // Approximate tooltip width
+  const tooltipHeight = 200; // Approximate tooltip height
+  const margin = 20;
+  
+  let x = event.clientX + 15;
+  let y = event.clientY - 10;
+  
+  // Check if tooltip would go off the right edge
+  if (x + tooltipWidth > window.innerWidth - margin) {
+    x = event.clientX - tooltipWidth - 15;
+  }
+  
+  // Check if tooltip would go off the bottom edge
+  if (y + tooltipHeight > window.innerHeight - margin) {
+    y = event.clientY - tooltipHeight - 10;
+  }
+  
+  // Ensure tooltip doesn't go off the left or top edges
+  x = Math.max(margin, x);
+  y = Math.max(margin, y);
+  
+  tooltipPosition.value = { x, y };
 }
 
 function handleChartLeave() {
+  // Add a small delay to allow moving from chart to tooltip
+  setTimeout(() => {
+    if (!isHoveringTooltip.value) {
+      showTooltip.value = false;
+      selectedQPU.value = null;
+    }
+  }, 100);
+}
+
+const isHoveringTooltip = ref(false);
+
+function handleTooltipMouseEnter() {
+  isHoveringTooltip.value = true;
+}
+
+function handleTooltipMouseLeave() {
+  isHoveringTooltip.value = false;
   showTooltip.value = false;
   selectedQPU.value = null;
 }
@@ -91,7 +127,7 @@ function handleChartLeave() {
       <div class="max-w-5xl mx-auto w-full">
         <AboutSection />
       </div>
-      <div class="w-full">
+      <div class="max-w-4xl mx-auto w-full">
         <TimelineChart :data="qpuData" @point-hover="handlePointHover" @mouseleave="handleChartLeave" />
       </div>
       <div class="max-w-4xl mx-auto w-full">
@@ -106,9 +142,10 @@ function handleChartLeave() {
                position: 'fixed', 
                left: tooltipPosition.x + 'px', 
                top: tooltipPosition.y + 'px', 
-               zIndex: 1000,
-               pointerEvents: 'none'
-             }">
+               zIndex: 1000
+             }"
+             @mouseenter="handleTooltipMouseEnter"
+             @mouseleave="handleTooltipMouseLeave">
           <QPUDetailTooltip :qpu="selectedQPU" />
         </div>
       </transition>

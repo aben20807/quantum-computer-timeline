@@ -1,9 +1,9 @@
 <template>
   <div class="w-full px-4 py-6">
     <div
-      class="relative border border-gray-300 bg-white/5 rounded-xl shadow-lg mx-auto"
+      class="relative border border-gray-300 bg-white/5 rounded-xl shadow-lg"
       ref="chartContainer"
-      style="width: 100%; max-width: 1400px; height: 500px; min-height: 420px;"
+      style="width: 100%; height: 500px; min-height: 420px;"
     ></div>
   </div>
 </template>
@@ -95,7 +95,18 @@ const renderChart = () => {
     chartInstance.clear();
     return;
   }
+
+  // Calculate min and max years from the data for proper axis bounds
+  const timestamps = chartData.map(item => item[0]);
+  const minTimestamp = Math.min(...timestamps);
+  const maxTimestamp = Math.max(...timestamps);
+  const minYear = new Date(minTimestamp).getFullYear();
+  const maxYear = new Date(maxTimestamp).getFullYear();
   
+  // Create year boundaries for the axis
+  const startOfAxis = new Date(minYear, 0, 1).getTime();
+  const endOfAxis = new Date(maxYear + 1, 0, 1).getTime();
+
   const option = {
     title: { 
       text: 'Quantum Computer Timeline', 
@@ -113,20 +124,39 @@ const renderChart = () => {
       containLabel: true
     },
     xAxis: {
-      type: 'time',
+      type: 'time', // Back to time type for correct data positioning
       name: 'Release Date',
       nameLocation: 'middle',
       nameGap: 30,
       nameTextStyle: { color: '#fff', fontWeight: 'bold' },
+      min: startOfAxis,
+      max: endOfAxis,
+      minInterval: 3600 * 24 * 365 * 1000, // Ensure minimum interval is one year
+      maxInterval: 3600 * 24 * 365 * 1000, // Ensure maximum interval is one year
+      splitNumber: maxYear - minYear + 1, // Force exactly one split per year
+      boundaryGap: ['5%', '5%'], // Add padding to the axis
       axisLabel: { 
         color: '#fff',
         formatter: (value) => {
-          return echarts.time.format(value, '{yyyy}-{MM}');
+          return echarts.time.format(value, '{yyyy}');
+        },
+        interval: (index, value) => {
+          // Only show labels at the start of each year
+          const date = new Date(value);
+          return date.getMonth() === 0 && date.getDate() === 1;
+        },
+        align: 'center'
+      },
+      axisTick: { 
+        lineStyle: { color: '#fff' },
+        interval: (index, value) => {
+          // Only show ticks at the start of each year
+          const date = new Date(value);
+          return date.getMonth() === 0 && date.getDate() === 1;
         }
       },
       splitLine: { show: false },
-      axisLine: { lineStyle: { color: '#fff' } },
-      axisTick: { lineStyle: { color: '#fff' } }
+      axisLine: { lineStyle: { color: '#fff' } }
     },
     yAxis: {
       type: 'value',
@@ -145,7 +175,7 @@ const renderChart = () => {
         const qpu = item[3];
         const style = getCompanyStyle(qpu.company);
         return {
-          value: [item[0], item[1]],
+          value: [item[0], item[1]], // Now correctly interpreted as [time, value]
           symbol: style.symbol,
           symbolSize: 24,
           itemStyle: {

@@ -68,7 +68,8 @@ const props = defineProps({
 }
 
 .papers-list li {
-  margin: 0.25rem 0;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 
 .paper-link {
@@ -76,11 +77,22 @@ const props = defineProps({
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
 }
 
 .paper-link:hover {
   color: #1d4ed8;
   text-decoration: underline;
+}
+
+.paper-link:visited {
+  color: #7c3aed;
+}
+
+.paper-link:active {
+  color: #1e40af;
 }
 
 .description {
