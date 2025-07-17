@@ -4,6 +4,7 @@
     <h3 class="tooltip-title">{{ qpu.name }}</h3>
     <div class="tooltip-content">
       <p><span class="label">Organization:</span> {{ qpu.organization }}</p>
+      <p><span class="label">Type:</span> {{ qpu.type }}</p>
       <p><span class="label">Release Date:</span> {{ qpu.releaseDate }}</p>
       <p><span class="label">Qubit Count:</span> {{ qpu.qubitCount }}</p>
       <div v-if="qpu.externalLink && qpu.externalLink.length" class="papers-section">

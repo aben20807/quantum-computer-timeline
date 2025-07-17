@@ -40,16 +40,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Debug - List dist files
-        run: ls -la dist
-
-      - name: Debug - List dist/data files
-        run: |
-          echo "=== Content of dist/ ==="
-          ls -la dist/
-          echo "=== Content of dist/data/ ==="
-          ls -la dist/data/
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

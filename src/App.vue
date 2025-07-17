@@ -246,6 +246,61 @@ function resetOrganizationVisibility() {
         </div>
       </div>
       <div class="max-w-7xl mx-auto w-full">
+        <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
+          <h2 class="text-lg font-medium text-gray-200 mb-4">Quantum Computing Technologies</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 class="text-blue-300 font-semibold text-base mb-2">Superconducting</h3>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                Uses superconducting circuits operating at near absolute zero temperatures. 
+                Fast gate operations and good connectivity, but requires complex cooling systems. 
+                Used by IBM, Google, and Rigetti.
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 class="text-green-300 font-semibold text-base mb-2">Trapped Ion</h3>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                Individual ions held in electromagnetic traps and manipulated with lasers. 
+                High fidelity gates and long coherence times, but slower operations. 
+                Used by IonQ, Honeywell, and Alpine Quantum Technologies.
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 class="text-purple-300 font-semibold text-base mb-2">Photonic</h3>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                Uses photons (particles of light) as qubits. Room temperature operation 
+                and natural for quantum networking, but challenging to implement two-qubit gates. 
+                Used by Xanadu, PsiQuantum, and Orca Computing.
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 class="text-yellow-300 font-semibold text-base mb-2">Neutral Atom</h3>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                Neutral atoms trapped in optical lattices and controlled with lasers. 
+                Highly scalable with flexible connectivity patterns. 
+                Used by QuEra, Pasqal, and Atom Computing.
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 class="text-red-300 font-semibold text-base mb-2">Annealing</h3>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                Specialized for optimization problems using quantum tunneling effects. 
+                Not universal quantum computers but excellent for specific applications. 
+                Primarily developed by D-Wave Systems.
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 class="text-cyan-300 font-semibold text-base mb-2">Topological</h3>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                Theoretical approach using anyons and topological properties for 
+                inherently error-resistant qubits. Still in research phase. 
+                Being pursued by Microsoft and others.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="max-w-7xl mx-auto w-full">
         <DisclaimerSection />
       </div>
       <transition name="fade">
