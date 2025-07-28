@@ -423,6 +423,22 @@ const renderChart = () => {
       data: chartData.map((item, index) => {
         const qpu = item[3];
         const style = getOrganizationStyle(qpu.organization);
+        
+        // Smart label positioning to prevent overlaps
+        const shouldShowLabel = isMobile 
+          ? (chartData.length > 15 ? index % 4 === 0 : index % 2 === 0) // Show fewer labels on mobile
+          : true;
+        
+        // Alternating label positions to reduce overlaps
+        const labelPosition = index % 2 === 0 ? 'top' : 'bottom';
+        const labelDistance = isMobile ? 8 : 12; // Increased distance to reduce overlaps
+        
+        // For dense data, use more aggressive spacing
+        const isDenseData = chartData.length > 50;
+        const finalLabelShow = isDenseData 
+          ? (isMobile ? index % 6 === 0 : index % 3 === 0)
+          : shouldShowLabel;
+        
         return {
           value: [item[0], item[1]], // Now correctly interpreted as [time, value]
           symbol: style.symbol,
@@ -436,23 +452,20 @@ const renderChart = () => {
           },
           qpuData: qpu,
           label: {
-            // On mobile with any data points, we need to be more aggressive about hiding labels
-            show: isMobile 
-              ? (chartData.length > 15 ? index % 4 === 0 : index % 2 === 0) // Show fewer labels on mobile
-              : true,
-            position: 'top',
+            show: finalLabelShow,
+            position: labelPosition, // Alternating top/bottom positions
             formatter: isMobile
               ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name) // Even shorter names on mobile
               : qpu.name,
             color: '#fff',
             fontSize: isMobile ? 9 : 12, // Increased from 7/10 to 9/12
             fontWeight: 'bold',
-            distance: isMobile ? 2 : 6,
+            distance: labelDistance, // Increased distance to prevent overlaps
             backgroundColor: 'rgba(0,0,0,0.7)', // Solid background for flat design
             borderColor: 'transparent', // Remove borders for flat design
             borderWidth: 0, // No border for flat style
             borderRadius: isMobile ? 1 : 3,
-            padding: isMobile ? [0, 2] : [2, 5], // Minimal padding on mobile
+            padding: isMobile ? [1, 3] : [2, 5], // Slightly more padding for better separation
             textShadowColor: 'transparent', // Remove text shadow for flat design
             textShadowBlur: 0, // No blur for flat style
             textShadowOffsetX: 0,
@@ -500,22 +513,69 @@ const renderChart = () => {
   chartInstance.on('datazoom', (params) => {
     // Update chart labels based on zoom level to reduce clutter when zoomed out
     const currentOption = chartInstance.getOption();
-    const xAxis = currentOption.xAxis[0];
     
     // Calculate zoom level based on the data range
     if (params.batch && params.batch[0]) {
       const zoomInfo = params.batch[0];
       const zoomLevel = zoomInfo.end - zoomInfo.start; // Percentage of data visible
       
-      // Adjust label frequency based on zoom level
-      chartInstance.setOption({
-        series: [{
-          label: {
-            show: zoomLevel < 50 ? true : (isMobile ? false : true), // Show more labels when zoomed in
-            fontSize: zoomLevel < 30 ? (isMobile ? 9 : 12) : (isMobile ? 7 : 10)
-          }
-        }]
-      }, { notMerge: true });
+      // Re-render with smart positioning when zoom changes
+      setTimeout(() => {
+        if (chartInstance) {
+          const newChartData = getChartData();
+          const updatedSeries = newChartData.map((item, index) => {
+            const qpu = item[3];
+            const style = getOrganizationStyle(qpu.organization);
+            
+            // Adjust label density based on zoom level
+            let labelShowFrequency = 1;
+            if (zoomLevel > 80) labelShowFrequency = 6;      // Very zoomed out
+            else if (zoomLevel > 60) labelShowFrequency = 4;  // Moderately zoomed out
+            else if (zoomLevel > 40) labelShowFrequency = 2;  // Slightly zoomed out
+            else labelShowFrequency = 1;                      // Zoomed in
+            
+            const shouldShowLabel = isMobile 
+              ? index % (labelShowFrequency * 2) === 0
+              : index % labelShowFrequency === 0;
+            
+            return {
+              value: [item[0], item[1]],
+              symbol: style.symbol,
+              symbolSize: isMobile ? 12 : 20,
+              itemStyle: {
+                color: style.color,
+                borderColor: 'transparent',
+                borderWidth: 0,
+                shadowBlur: 0,
+                shadowColor: 'transparent'
+              },
+              qpuData: qpu,
+              label: {
+                show: shouldShowLabel,
+                position: index % 2 === 0 ? 'top' : 'bottom', // Maintain alternating positions
+                formatter: isMobile
+                  ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name)
+                  : qpu.name,
+                color: '#fff',
+                fontSize: zoomLevel < 30 ? (isMobile ? 10 : 13) : (isMobile ? 9 : 12),
+                fontWeight: 'bold',
+                distance: isMobile ? 8 : 12,
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                borderColor: 'transparent',
+                borderWidth: 0,
+                borderRadius: isMobile ? 1 : 3,
+                padding: isMobile ? [1, 3] : [2, 5]
+              }
+            };
+          });
+          
+          chartInstance.setOption({
+            series: [{
+              data: updatedSeries
+            }]
+          }, { notMerge: false });
+        }
+      }, 100);
     }
   });
 };
