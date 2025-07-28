@@ -9,13 +9,13 @@
       <!-- Reset Zoom Button -->
       <button
         @click="resetZoom"
-        class="absolute top-3 right-3 md:top-4 md:right-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 z-10 flex items-center gap-2 border border-blue-400/30 hover:border-blue-300/50 backdrop-blur-sm"
+        class="absolute top-0 right-0 md:top-0.5 md:right-0.5 bg-white/10 hover:bg-white/20 text-white/60 hover:text-white/80 px-2 py-1 md:px-2.5 md:py-1.5 rounded-md shadow-sm hover:shadow-md transition-all duration-200 z-20 flex items-center gap-1 border border-white/10 hover:border-white/20 backdrop-blur-sm text-xs"
         title="Reset Zoom (R)"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200 hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform duration-200 hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
-        <span class="hidden sm:inline text-xs font-semibold tracking-wide">Reset</span>
+        <span class="hidden sm:inline font-normal">Reset</span>
       </button>
     </div>
   </div>
@@ -172,16 +172,29 @@ const renderChart = () => {
   const isMobile = window.innerWidth < 768;
   
   const option = {
-    title: { 
-      text: 'Quantum Computer Timeline', 
-      left: 'center',
-      top: isMobile ? 10 : 20, // Less padding on mobile
-      textStyle: { 
-        color: '#fff', 
-        fontWeight: 'bold', 
-        fontSize: isMobile ? 16 : 22 // Smaller font on mobile
-      } 
-    },
+    title: [
+      {
+        text: 'Quantum Computer Timeline', 
+        left: 'center',
+        top: isMobile ? 10 : 20, // Less padding on mobile
+        textStyle: { 
+          color: '#fff', 
+          fontWeight: 'bold', 
+          fontSize: isMobile ? 16 : 22 // Smaller font on mobile
+        } 
+      },
+      {
+        text: 'Created by aben20807',
+        left: 'center',
+        top: isMobile ? 32 : 50, // Position below main title
+        textStyle: {
+          color: 'rgba(255, 255, 255, 0.7)', // Slightly transparent
+          fontWeight: 'normal',
+          fontSize: isMobile ? 10 : 12, // Smaller than main title
+          fontStyle: 'italic'
+        }
+      }
+    ],
     tooltip: {
       show: false  // Disable built-in tooltip to use our custom tooltip system
     },
@@ -264,7 +277,7 @@ const renderChart = () => {
         yAxisIndex: [0],
         filterMode: 'filter',
         show: !isMobile, // Hide slider on mobile
-        left: 10,
+        left: 5, // Moved closer to edge to create more space
         width: 20,
         borderColor: 'rgba(255,255,255,0.2)',
         textStyle: {
@@ -309,9 +322,9 @@ const renderChart = () => {
       }
     ],
     grid: { 
-      left: isMobile ? '5%' : '60px', // More space for Y-axis zoom slider on desktop
+      left: isMobile ? '5%' : '80px', // Increased space for Y-axis zoom slider on desktop
       right: '3%', 
-      top: isMobile ? 40 : 80,
+      top: isMobile ? 50 : 90, // Increased to accommodate author subtitle
       bottom: isMobile ? 40 : 120, // More space for zoom slider on desktop
       containLabel: true,
       height: isMobile ? '92%' : '75%' // Adjust height for zoom controls
@@ -376,7 +389,7 @@ const renderChart = () => {
       type: 'log', // Changed from 'value' to 'log' for logarithmic scale
       name: 'Qubit Count (log scale)',
       nameLocation: 'middle',
-      nameGap: isMobile ? 25 : 50,
+      nameGap: isMobile ? 25 : 65, // Increased gap to create more space from slider
       nameTextStyle: { 
         color: '#fff', 
         fontWeight: 'bold',
@@ -431,7 +444,7 @@ const renderChart = () => {
         
         // Alternating label positions to reduce overlaps
         const labelPosition = index % 2 === 0 ? 'top' : 'bottom';
-        const labelDistance = isMobile ? 8 : 12; // Increased distance to reduce overlaps
+        const labelDistance = isMobile ? 4 : 6; // Reduced distance to bring labels closer
         
         // For dense data, use more aggressive spacing
         const isDenseData = chartData.length > 50;
@@ -559,7 +572,7 @@ const renderChart = () => {
                 color: '#fff',
                 fontSize: zoomLevel < 30 ? (isMobile ? 10 : 13) : (isMobile ? 9 : 12),
                 fontWeight: 'bold',
-                distance: isMobile ? 8 : 12,
+                distance: isMobile ? 4 : 6, // Reduced distance to match main chart
                 backgroundColor: 'rgba(0,0,0,0.7)',
                 borderColor: 'transparent',
                 borderWidth: 0,
@@ -673,11 +686,24 @@ const updateChartForMobile = () => {
   
   // Mobile-specific modifications
   const mobileOptions = {
-    title: {
-      text: isVerySmallScreen ? 'QPU Timeline' : 'Quantum Computer Timeline', // Even shorter title on very small screens
-      top: isVerySmallScreen ? 5 : 10,
-      textStyle: { fontSize: isVerySmallScreen ? 14 : 16 }
-    },
+    title: [
+      {
+        text: isVerySmallScreen ? 'QPU Timeline' : 'Quantum Computer Timeline', // Even shorter title on very small screens
+        top: isVerySmallScreen ? 5 : 10,
+        textStyle: { fontSize: isVerySmallScreen ? 14 : 16 }
+      },
+      {
+        text: 'Created by aben20807',
+        left: 'center',
+        top: isVerySmallScreen ? 22 : 28,
+        textStyle: {
+          color: 'rgba(255, 255, 255, 0.7)',
+          fontWeight: 'normal',
+          fontSize: isVerySmallScreen ? 8 : 9,
+          fontStyle: 'italic'
+        }
+      }
+    ],
     toolbox: {
       show: false // Always hide toolbox on mobile
     },
