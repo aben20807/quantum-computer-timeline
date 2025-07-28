@@ -111,6 +111,178 @@ const getChartData = () => {
     });
 };
 
+// Advanced collision-free label positioning with bounding box calculation
+const calculateOptimalLabelPosition = (currentIndex, currentItem, allData, isMobile) => {
+  const positions = ['top', 'bottom', 'left', 'right'];
+  const baseDistance = isMobile ? 4 : 6; // Reduced from 10/15 to 4/6
+  
+  // Get current point coordinates
+  const currentTime = currentItem[0];
+  const currentQubits = currentItem[1];
+  const currentName = currentItem[3]?.name || 'Unknown';
+  
+  console.log(`Processing label for ${currentName} (index: ${currentIndex})`);
+  
+  // Estimate label dimensions (approximate)
+  const fontSize = isMobile ? 9 : 12;
+  const charWidth = fontSize * 0.6; // Approximate character width
+  const labelWidth = currentName.length * charWidth + 5; // +5 for padding
+  const labelHeight = fontSize + 3; // +3 for padding
+  
+  // Calculate label bounding boxes for all positions
+  const candidatePositions = positions.map(pos => {
+    let labelX, labelY;
+    const distance = baseDistance;
+    
+    // Calculate approximate label position based on ECharts positioning
+    switch (pos) {
+      case 'top':
+        labelX = currentTime - labelWidth / 2;
+        labelY = Math.log10(currentQubits) - distance - labelHeight;
+        break;
+      case 'bottom':
+        labelX = currentTime - labelWidth / 2;
+        labelY = Math.log10(currentQubits) + distance;
+        break;
+      case 'left':
+        labelX = currentTime - distance - labelWidth;
+        labelY = Math.log10(currentQubits) - labelHeight / 2;
+        break;
+      case 'right':
+        labelX = currentTime + distance;
+        labelY = Math.log10(currentQubits) - labelHeight / 2;
+        break;
+    }
+    
+    return {
+      position: pos,
+      distance: distance,
+      bbox: {
+        x: labelX,
+        y: labelY,
+        width: labelWidth,
+        height: labelHeight
+      }
+    };
+  });
+  
+  // Check for collisions with nearby points' labels
+  const timeWindow = 365 * 24 * 60 * 60 * 1000 * 3; // 3 years
+  const qubitWindow = 1.0; // 1.0 log units
+  
+  const nearbyPoints = allData.filter((item, index) => {
+    if (index === currentIndex) return false;
+    
+    const timeDiff = Math.abs(item[0] - currentTime);
+    const qubitLogDiff = Math.abs(Math.log10(item[1]) - Math.log10(currentQubits));
+    
+    return timeDiff < timeWindow && qubitLogDiff < qubitWindow;
+  });
+  
+  console.log(`Found ${nearbyPoints.length} nearby points for collision check`);
+  
+  // Score each position based on actual bounding box collisions
+  const scoredPositions = candidatePositions.map(candidate => {
+    let collisionScore = 0;
+    let minDistance = candidate.distance;
+    
+    nearbyPoints.forEach((nearbyPoint, nearbyIndex) => {
+      const nearbyName = nearbyPoint[3]?.name || 'Unknown';
+      const nearbyLabelWidth = nearbyName.length * charWidth + 10;
+      const nearbyLabelHeight = fontSize + 3;
+      
+      // Estimate where the nearby point's label might be
+      const nearbyTime = nearbyPoint[0];
+      const nearbyQubits = nearbyPoint[1];
+      
+      // Assume nearby labels follow similar positioning pattern
+      const nearbyPositionIndex = (currentIndex < allData.indexOf(nearbyPoint) ? 
+        allData.indexOf(nearbyPoint) : allData.indexOf(nearbyPoint)) % 4;
+      const nearbyPos = positions[nearbyPositionIndex];
+      
+      let nearbyLabelX, nearbyLabelY;
+      
+      switch (nearbyPos) {
+        case 'top':
+          nearbyLabelX = nearbyTime - nearbyLabelWidth / 2;
+          nearbyLabelY = Math.log10(nearbyQubits) - baseDistance - nearbyLabelHeight;
+          break;
+        case 'bottom':
+          nearbyLabelX = nearbyTime - nearbyLabelWidth / 2;
+          nearbyLabelY = Math.log10(nearbyQubits) + baseDistance;
+          break;
+        case 'left':
+          nearbyLabelX = nearbyTime - baseDistance - nearbyLabelWidth;
+          nearbyLabelY = Math.log10(nearbyQubits) - nearbyLabelHeight / 2;
+          break;
+        case 'right':
+          nearbyLabelX = nearbyTime + baseDistance;
+          nearbyLabelY = Math.log10(nearbyQubits) - nearbyLabelHeight / 2;
+          break;
+      }
+      
+      const nearbyBbox = {
+        x: nearbyLabelX,
+        y: nearbyLabelY,
+        width: nearbyLabelWidth,
+        height: nearbyLabelHeight
+      };
+      
+      // Check for bounding box collision
+      const collision = rectanglesOverlap(candidate.bbox, nearbyBbox);
+      if (collision) {
+        collisionScore += 10; // Heavy penalty for collision
+        
+        // Calculate needed distance to avoid collision
+        const overlapX = Math.max(0, Math.min(candidate.bbox.x + candidate.bbox.width, nearbyBbox.x + nearbyBbox.width) - 
+                                    Math.max(candidate.bbox.x, nearbyBbox.x));
+        const overlapY = Math.max(0, Math.min(candidate.bbox.y + candidate.bbox.height, nearbyBbox.y + nearbyBbox.height) - 
+                                    Math.max(candidate.bbox.y, nearbyBbox.y));
+        
+        if (overlapX > 0 || overlapY > 0) {
+          minDistance = Math.max(minDistance, baseDistance + Math.max(overlapX, overlapY) / 20); // Reduced multiplier from /10 to /20
+        }
+      }
+      
+      // Add proximity penalty even without collision
+      const centerDistance = Math.sqrt(
+        Math.pow(candidate.bbox.x + candidate.bbox.width/2 - (nearbyBbox.x + nearbyBbox.width/2), 2) +
+        Math.pow(candidate.bbox.y + candidate.bbox.height/2 - (nearbyBbox.y + nearbyBbox.height/2), 2)
+      );
+      
+      if (centerDistance < labelWidth) {
+        collisionScore += Math.max(0, 5 - centerDistance / 20); // Proximity penalty
+      }
+    });
+    
+    return {
+      ...candidate,
+      collisionScore,
+      adjustedDistance: Math.min(minDistance, baseDistance + 10) // Reduced cap from +20 to +10
+    };
+  });
+  
+  // Sort by collision score (lower is better)
+  scoredPositions.sort((a, b) => a.collisionScore - b.collisionScore);
+  
+  const bestOption = scoredPositions[0];
+  
+  console.log(`Selected position '${bestOption.position}' with collision score ${bestOption.collisionScore} and distance ${bestOption.adjustedDistance}`);
+  
+  return {
+    position: bestOption.position,
+    distance: bestOption.adjustedDistance
+  };
+};
+
+// Helper function to check if two rectangles overlap
+const rectanglesOverlap = (rect1, rect2) => {
+  return !(rect1.x + rect1.width < rect2.x || 
+           rect2.x + rect2.width < rect1.x || 
+           rect1.y + rect1.height < rect2.y || 
+           rect2.y + rect2.height < rect1.y);
+};
+
 const renderChart = () => {
   console.log('renderChart called, container:', chartContainer.value, 'data length:', props.data?.length);
   
@@ -437,55 +609,17 @@ const renderChart = () => {
         const qpu = item[3];
         const style = getOrganizationStyle(qpu.organization);
         
-        // Enhanced label positioning to maximize visibility while preventing overlaps
+        // Use force-directed label positioning algorithm to avoid overlaps
         const totalPoints = chartData.length;
         let shouldShowLabel = true;
-        let labelPosition = 'top';
-        let labelDistance = isMobile ? 4 : 6;
         
-        // Dynamic positioning using top/bottom/left/right to avoid overlaps
-        if (totalPoints > 40) {
-          // For very dense data, use 8-pattern rotation with all directional positions
-          const positionInGroup = index % 8;
-          switch (positionInGroup) {
-            case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
-            case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
-            case 2: labelPosition = 'left'; labelDistance = isMobile ? 6 : 8; break;
-            case 3: labelPosition = 'right'; labelDistance = isMobile ? 6 : 8; break;
-            case 4: labelPosition = 'top'; labelDistance = isMobile ? 7 : 10; break;
-            case 5: labelPosition = 'bottom'; labelDistance = isMobile ? 7 : 10; break;
-            case 6: labelPosition = 'left'; labelDistance = isMobile ? 4 : 5; break;
-            case 7: labelPosition = 'right'; labelDistance = isMobile ? 4 : 5; break;
-          }
-          // Reduce mobile hiding - only hide if extremely dense
-          if (isMobile && totalPoints > 80) {
-            shouldShowLabel = index % 2 === 0; // Show every other instead of every 3rd
-          }
-        } else if (totalPoints > 20) {
-          // Medium-high density: use 6-pattern rotation with directional variety
-          const pattern = index % 6;
-          switch (pattern) {
-            case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
-            case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
-            case 2: labelPosition = 'left'; labelDistance = isMobile ? 5 : 7; break;
-            case 3: labelPosition = 'right'; labelDistance = isMobile ? 5 : 7; break;
-            case 4: labelPosition = 'top'; labelDistance = isMobile ? 6 : 9; break;
-            case 5: labelPosition = 'bottom'; labelDistance = isMobile ? 6 : 9; break;
-          }
-        } else if (totalPoints > 10) {
-          // Medium density: use 4-pattern alternating with varied distances
-          const pattern = index % 4;
-          switch (pattern) {
-            case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
-            case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
-            case 2: labelPosition = 'top'; labelDistance = isMobile ? 6 : 8; break;
-            case 3: labelPosition = 'bottom'; labelDistance = isMobile ? 6 : 8; break;
-          }
-        } else {
-          // Low density: simple alternating with close positioning
-          labelPosition = index % 2 === 0 ? 'top' : 'bottom';
-          labelDistance = isMobile ? 4 : 6;
-        }
+        // Calculate optimal label position using collision detection
+        const { position, distance } = calculateOptimalLabelPosition(
+          index, 
+          item, 
+          chartData, 
+          isMobile
+        );
         
         return {
           value: [item[0], item[1]], // Now correctly interpreted as [time, value]
@@ -501,15 +635,15 @@ const renderChart = () => {
           qpuData: qpu,
           label: {
             show: shouldShowLabel,
-            position: labelPosition,
+            position: position,
             formatter: isMobile
               ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name) // Even shorter names on mobile
               : qpu.name,
             color: '#fff',
             fontSize: isMobile ? 9 : 12, // Increased from 7/10 to 9/12
             fontWeight: 'bold',
-            distance: labelDistance,
-            backgroundColor: labelPosition === 'inside' ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.7)', // Darker background for inside labels
+            distance: distance,
+            backgroundColor: 'rgba(0,0,0,0.7)',
             borderColor: 'transparent', // Remove borders for flat design
             borderWidth: 0, // No border for flat style
             borderRadius: isMobile ? 1 : 3,
@@ -575,43 +709,23 @@ const renderChart = () => {
             const qpu = item[3];
             const style = getOrganizationStyle(qpu.organization);
             
-            // Adjust label density and positioning based on zoom level - now shows MORE labels
+            // Adjust label density and positioning based on zoom level using collision detection
             const totalPoints = newChartData.length;
             let labelShowFrequency = 1;
             let shouldShowLabel = true;
-            let labelPosition = 'top';
-            let labelDistance = isMobile ? 4 : 6;
             
             // More conservative frequency adjustment - show more labels
             if (zoomLevel > 90) labelShowFrequency = 3;       // Only hide when extremely zoomed out
             else if (zoomLevel > 75) labelShowFrequency = 2;  // Moderately zoomed out
             else labelShowFrequency = 1;                      // Show all when reasonable zoom
             
-            // Apply sophisticated positioning based on zoom and density
-            if (zoomLevel < 60 && totalPoints > 20) {
-              // When zoomed in enough, use sophisticated directional positioning
-              const positionInGroup = index % 6;
-              switch (positionInGroup) {
-                case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
-                case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
-                case 2: labelPosition = 'left'; labelDistance = isMobile ? 5 : 7; break;
-                case 3: labelPosition = 'right'; labelDistance = isMobile ? 5 : 7; break;
-                case 4: labelPosition = 'top'; labelDistance = isMobile ? 6 : 9; break;
-                case 5: labelPosition = 'bottom'; labelDistance = isMobile ? 6 : 9; break;
-              }
-            } else if (totalPoints > 10) {
-              // Medium complexity positioning with directional variety
-              const pattern = index % 4;
-              switch (pattern) {
-                case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
-                case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
-                case 2: labelPosition = 'left'; labelDistance = isMobile ? 5 : 7; break;
-                case 3: labelPosition = 'right'; labelDistance = isMobile ? 5 : 7; break;
-              }
-            } else {
-              // Simple alternating for sparse data
-              labelPosition = index % 2 === 0 ? 'top' : 'bottom';
-            }
+            // Use force-directed positioning for zoom too
+            const { position, distance } = calculateOptimalLabelPosition(
+              index, 
+              item, 
+              newChartData, 
+              isMobile
+            );
             
             // Less aggressive hiding - only when really necessary
             shouldShowLabel = isMobile 
@@ -632,14 +746,14 @@ const renderChart = () => {
               qpuData: qpu,
               label: {
                 show: shouldShowLabel,
-                position: labelPosition,
+                position: position,
                 formatter: isMobile
                   ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name)
                   : qpu.name,
                 color: '#fff',
                 fontSize: zoomLevel < 30 ? (isMobile ? 10 : 13) : (isMobile ? 9 : 12),
                 fontWeight: 'bold',
-                distance: labelDistance,
+                distance: distance,
                 backgroundColor: 'rgba(0,0,0,0.7)',
                 borderColor: 'transparent',
                 borderWidth: 0,
