@@ -1,10 +1,23 @@
 <template>
   <div class="w-full py-0">
-    <div
-      class="relative bg-white/5 rounded-lg md:rounded-2xl p-0.5 sm:p-1 md:p-4 shadow-xl backdrop-blur-sm border border-white/10"
-      ref="chartContainer"
-      style="width: 100%; height: calc(100vw * 0.75); min-height: 250px; max-height: 600px;"
-    ></div>
+    <div class="relative">
+      <div
+        class="relative bg-white/5 rounded-lg md:rounded-2xl p-0.5 sm:p-1 md:p-4 shadow-xl backdrop-blur-sm border border-white/10"
+        ref="chartContainer"
+        style="width: 100%; height: calc(100vw * 0.90); min-height: 320px; max-height: 750px;"
+      ></div>
+      <!-- Reset Zoom Button -->
+      <button
+        @click="resetZoom"
+        class="absolute top-3 right-3 md:top-4 md:right-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 z-10 flex items-center gap-2 border border-blue-400/30 hover:border-blue-300/50 backdrop-blur-sm"
+        title="Reset Zoom (R)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200 hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span class="hidden sm:inline text-xs font-semibold tracking-wide">Reset</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -30,6 +43,32 @@ const props = defineProps({
 
 const chartContainer = ref(null);
 let chartInstance = null;
+
+// Reset zoom function
+const resetZoom = () => {
+  if (chartInstance) {
+    // Reset both axes to show full data range
+    chartInstance.dispatchAction({
+      type: 'dataZoom',
+      dataZoomIndex: 0, // X-axis
+      start: 0,
+      end: 100
+    });
+    chartInstance.dispatchAction({
+      type: 'dataZoom',
+      dataZoomIndex: 1, // Y-axis
+      start: 0,
+      end: 100
+    });
+    
+    // Also trigger a chart refresh to ensure proper rendering
+    setTimeout(() => {
+      if (chartInstance) {
+        chartInstance.resize();
+      }
+    }, 100);
+  }
+};
 
 const getOrganizationStyle = (organization) => {
   // Use the organizationStyles passed from the parent component
@@ -146,13 +185,136 @@ const renderChart = () => {
     tooltip: {
       show: false  // Disable built-in tooltip to use our custom tooltip system
     },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: [0],
+        filterMode: 'filter',
+        disabled: true, // Disable mouse wheel zoom for X-axis
+        zoomLock: true,
+        minSpan: 10,
+        maxSpan: 100,
+        start: 0,
+        end: 100
+      },
+      {
+        type: 'inside',
+        yAxisIndex: [0],
+        filterMode: 'filter',
+        disabled: true, // Disable mouse wheel zoom for Y-axis
+        zoomLock: true,
+        minSpan: 5,
+        maxSpan: 100,
+        start: 0,
+        end: 100,
+        zoomOnMouseWheel: false, // Completely disable mouse wheel zoom
+        moveOnMouseMove: false,
+        moveOnMouseWheel: false,
+        // Configure exponential zoom behavior to match log scale
+        rangeMode: ['percent', 'percent'],
+        calculator: 'log', // Use logarithmic calculation for zoom
+        logBase: 10 // Match the Y-axis log base
+      },
+      {
+        type: 'slider',
+        xAxisIndex: [0],
+        filterMode: 'filter',
+        show: !isMobile, // Hide slider on mobile
+        bottom: 40,
+        height: 20,
+        borderColor: 'rgba(255,255,255,0.2)',
+        textStyle: {
+          color: '#fff'
+        },
+        brushStyle: {
+          color: 'rgba(96,165,250,0.3)'
+        },
+        handleStyle: {
+          color: '#60a5fa',
+          borderColor: '#fff'
+        },
+        moveHandleStyle: {
+          color: '#60a5fa'
+        },
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#60a5fa',
+            width: 2
+          },
+          areaStyle: {
+            color: 'rgba(96,165,250,0.2)'
+          }
+        },
+        dataBackground: {
+          lineStyle: {
+            color: 'rgba(255,255,255,0.3)',
+            width: 1
+          },
+          areaStyle: {
+            color: 'rgba(255,255,255,0.1)'
+          }
+        },
+        // Disable data shadows for plain slider appearance
+        showDataShadow: false,
+        showDetail: false,
+        realtime: true
+      },
+      {
+        type: 'slider',
+        yAxisIndex: [0],
+        filterMode: 'filter',
+        show: !isMobile, // Hide slider on mobile
+        left: 10,
+        width: 20,
+        borderColor: 'rgba(255,255,255,0.2)',
+        textStyle: {
+          color: '#fff'
+        },
+        brushStyle: {
+          color: 'rgba(96,165,250,0.3)'
+        },
+        handleStyle: {
+          color: '#60a5fa',
+          borderColor: '#fff'
+        },
+        moveHandleStyle: {
+          color: '#60a5fa'
+        },
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#60a5fa',
+            width: 2
+          },
+          areaStyle: {
+            color: 'rgba(96,165,250,0.2)'
+          }
+        },
+        dataBackground: {
+          lineStyle: {
+            color: 'rgba(255,255,255,0.3)',
+            width: 1
+          },
+          areaStyle: {
+            color: 'rgba(255,255,255,0.1)'
+          }
+        },
+        // Disable data shadows for plain slider appearance
+        showDataShadow: false,
+        showDetail: false,
+        realtime: true,
+        // Configure exponential zoom behavior to match log scale
+        rangeMode: ['percent', 'percent'],
+        calculator: 'log', // Use logarithmic calculation for zoom
+        logBase: 10 // Match the Y-axis log base
+      }
+    ],
     grid: { 
-      left: '5%', 
+      left: isMobile ? '5%' : '60px', // More space for Y-axis zoom slider on desktop
       right: '3%', 
       top: isMobile ? 40 : 80,
-      bottom: isMobile ? 40 : 80,
+      bottom: isMobile ? 40 : 120, // More space for zoom slider on desktop
       containLabel: true,
-      height: isMobile ? '92%' : '85%' // Even more height utilization on mobile
+      height: isMobile ? '92%' : '75%' // Adjust height for zoom controls
     },
     xAxis: {
       type: 'time', // Back to time type for correct data positioning
@@ -220,8 +382,8 @@ const renderChart = () => {
         fontWeight: 'bold',
         fontSize: isMobile ? 8 : 12
       },
-      min: Math.max(1, minQubitCount * 0.8), // Ensure minimum is at least 1 for log scale
-      max: maxQubitCount * 1.2, // Add 20% padding at the top
+      min: Math.max(0.5, minQubitCount * 0.5), // Ensure minimum is at least 0.5 for log scale, more conservative
+      max: maxQubitCount * 2, // Add more padding at the top
       logBase: 10, // Base-10 logarithmic scale
       axisLabel: { 
         color: '#fff',
@@ -257,6 +419,7 @@ const renderChart = () => {
     },
     series: [{
       type: 'scatter',
+      name: 'QPU Data',
       data: chartData.map((item, index) => {
         const qpu = item[3];
         const style = getOrganizationStyle(qpu.organization);
@@ -282,7 +445,7 @@ const renderChart = () => {
               ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name) // Even shorter names on mobile
               : qpu.name,
             color: '#fff',
-            fontSize: isMobile ? 7 : 10,
+            fontSize: isMobile ? 9 : 12, // Increased from 7/10 to 9/12
             fontWeight: 'bold',
             distance: isMobile ? 2 : 6,
             backgroundColor: 'rgba(0,0,0,0.7)', // Solid background for flat design
@@ -307,7 +470,7 @@ const renderChart = () => {
         },
         label: {
           show: true,
-          fontSize: isMobile ? 8 : 12,
+          fontSize: isMobile ? 10 : 14, // Increased from 8/12 to 10/14
           fontWeight: 'bold',
           backgroundColor: 'rgba(0,0,0,0.9)' // Stronger background on hover
         }
@@ -331,6 +494,29 @@ const renderChart = () => {
   
   chartInstance.on('globalout', () => {
     emit('mouseleave');
+  });
+  
+  // Add zoom event handlers for better UX
+  chartInstance.on('datazoom', (params) => {
+    // Update chart labels based on zoom level to reduce clutter when zoomed out
+    const currentOption = chartInstance.getOption();
+    const xAxis = currentOption.xAxis[0];
+    
+    // Calculate zoom level based on the data range
+    if (params.batch && params.batch[0]) {
+      const zoomInfo = params.batch[0];
+      const zoomLevel = zoomInfo.end - zoomInfo.start; // Percentage of data visible
+      
+      // Adjust label frequency based on zoom level
+      chartInstance.setOption({
+        series: [{
+          label: {
+            show: zoomLevel < 50 ? true : (isMobile ? false : true), // Show more labels when zoomed in
+            fontSize: zoomLevel < 30 ? (isMobile ? 9 : 12) : (isMobile ? 7 : 10)
+          }
+        }]
+      }, { notMerge: true });
+    }
   });
 };
 
@@ -371,7 +557,45 @@ onMounted(() => {
     }, 250); // Debounce resize events
   };
   
+  // Keyboard shortcuts for zoom control (desktop only)
+  const handleKeyDown = (event) => {
+    if (window.innerWidth >= 768 && chartInstance) { // Desktop only
+      switch(event.key) {
+        case '+':
+        case '=':
+          // Zoom in
+          event.preventDefault();
+          chartInstance.dispatchAction({
+            type: 'dataZoom',
+            dataZoomIndex: 0,
+            start: 25,
+            end: 75
+          });
+          break;
+        case '-':
+          // Zoom out
+          event.preventDefault();
+          chartInstance.dispatchAction({
+            type: 'dataZoom',
+            dataZoomIndex: 0,
+            start: 0,
+            end: 100
+          });
+          break;
+        case 'r':
+        case 'R':
+          // Reset zoom
+          event.preventDefault();
+          chartInstance.dispatchAction({
+            type: 'restore'
+          });
+          break;
+      }
+    }
+  };
+  
   window.addEventListener('resize', handleResize);
+  window.addEventListener('keydown', handleKeyDown);
 });
 
 // Function to optimize chart for mobile view
@@ -394,6 +618,42 @@ const updateChartForMobile = () => {
       top: isVerySmallScreen ? 5 : 10,
       textStyle: { fontSize: isVerySmallScreen ? 14 : 16 }
     },
+    toolbox: {
+      show: false // Always hide toolbox on mobile
+    },
+    brush: {
+      toolbox: [],
+      xAxisIndex: [],
+      yAxisIndex: []
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: [0],
+        filterMode: 'filter',
+        disabled: true, // Disable mouse wheel zoom on mobile
+        zoomLock: true,
+        minSpan: 10,
+        maxSpan: 100,
+        start: 0,
+        end: 100
+      },
+      {
+        type: 'inside',
+        yAxisIndex: [0],
+        filterMode: 'filter',
+        disabled: true, // Disable mouse wheel zoom on mobile
+        zoomLock: true,
+        minSpan: 5,
+        maxSpan: 100,
+        start: 0,
+        end: 100,
+        zoomOnMouseWheel: false, // Completely disable mouse wheel zoom
+        moveOnMouseMove: false,
+        moveOnMouseWheel: false
+      }
+      // Remove slider zoom controls on mobile for space
+    ],
     grid: {
       left: isVerySmallScreen ? '1%' : (dataDensity > 20 ? '3%' : '2%'), // Extremely minimal margins on very small screens
       right: isVerySmallScreen ? '1%' : '2%',
@@ -451,11 +711,13 @@ const updateChartForMobile = () => {
 onBeforeUnmount(() => {
   // Remove event listeners
   window.removeEventListener('resize', handleResize);
+  window.removeEventListener('keydown', handleKeyDown);
   
   if (chartInstance) {
     // Clean up all chart events
     chartInstance.off('mouseover');
     chartInstance.off('globalout');
+    chartInstance.off('datazoom');
     chartInstance.dispose();
     chartInstance = null;
   }

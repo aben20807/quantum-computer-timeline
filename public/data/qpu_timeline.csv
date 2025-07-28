@@ -19,8 +19,6 @@ Neutral-Atom System,Atom Computing,Neutral atom,2023-10-24,1180,"[{""title"":""a
 28‑qubit System,Microsoft/Atom Computing,Neutral atom,2024-11-18,28,"[{""title"":""microsoft.com"", ""url"": ""https://azure.microsoft.com/en-us/blog/quantum/2024/11/19/microsoft-and-atom-computing-offer-a-commercial-quantum-machine-with-the-largest-number-of-entangled-logical-qubits-on-record/""}, {""title"":""paper"", ""url"":""https://arxiv.org/abs/2411.11822""}]",Entangled 24 logical qubits
 Aquila,QuEra ,Neutral atom,2022-11-01,256,"[{""title"":""quera.com"", ""url"":""https://www.quera.com/aquila""}]",Vacuum-trapped Rubidium atoms in programmable laser arrays.
 50‑qubit System,IQM/VTT,Superconducting ,2025-03-04,50,"[{""title"":""iqm.com"", ""url"":""https://meetiqm.com/press-releases/vtt-and-iqm-launch-first-50-qubit-quantum-computer-developed-in-europe/""}]",
-Ankaa-2,Rigetti,Superconducting ,2024-01,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/news/rigetti-announces-public-availability-of-ankaa-2-system-with-a-2-5x-performance-improvement-compared-to-previous-qpus""}]",
-Ankaa-3,Rigetti,Superconducting ,2024-12-23,84,"[{""title"":""rigetti.com"", ""url"": ""https://investors.rigetti.com/news-releases/news-release-details/rigetti-computing-launches-84-qubit-ankaatm-3-system-achieves""}]",
 Zuchongzhi 1.0,USTC,Superconducting ,2021-05-06,62,"[{""title"":""postquantum.com"", ""url"":""https://postquantum.com/industry-news/zuchongzhi-1/""}, {""title"":""paper"", ""url"": ""https://www.science.org/doi/10.1126/science.abg7812""}]",
 Zuchongzhi 2.1,USTC,Superconducting ,2021-09,66,"[{""title"":""paper"", ""url"":""https://www.sciencedirect.com/science/article/pii/S2095927321006733""}]",
 Zuchongzhi 3.0,USTC,Superconducting ,2025-03-03,105,"[{""title"":""paper"", ""url"":""https://www.nature.com/nature-index/article/10.1103/physrevlett.134.090601""}]",
@@ -47,8 +45,8 @@ Aspen-M-1,Rigetti,Superconducting ,2022-02-15,80,"[{""title"":""rigetti.com"", "
 Aspen-M-2,Rigetti,Superconducting ,2022-08-01,80,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}]",
 Aspen-M-3,Rigetti,Superconducting ,2022-12-02,80,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}]",
 Ankaa-1,Rigetti,Superconducting ,2023-03,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}]",
-Ankaa-2,Rigetti,Superconducting ,2023-12-20,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}]",
-Ankaa-3,Rigetti,Superconducting ,2024-12-20,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}]",
+Ankaa-2,Rigetti,Superconducting ,2023-12-20,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}, {""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/news/rigetti-announces-public-availability-of-ankaa-2-system-with-a-2-5x-performance-improvement-compared-to-previous-qpus""}]",
+Ankaa-3,Rigetti,Superconducting ,2024-12-20,84,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}, {""title"":""rigetti.com"", ""url"": ""https://investors.rigetti.com/news-releases/news-release-details/rigetti-computing-launches-84-qubit-ankaatm-3-system-achieves""}]",
 Harmony,IonQ,Trapped ion,2020,11,"[{""title"":""ionq.com"", ""url"":""https://ionq.com/quantum-systems/harmony""}]",
 Aria,IonQ,Trapped ion,2022-08-16,25,"[{""title"":""ionq.com"", ""url"":""https://ionq.com/news/august-16-2022-ionq-2022-aria-azure""}]",
 Forte,IonQ,Trapped ion,2023-06-22,32,"[{""title"":""ionq.com"", ""url"":""https://ionq.com/blog/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq""}]",

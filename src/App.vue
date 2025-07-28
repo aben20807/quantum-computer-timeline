@@ -24,35 +24,35 @@ function parsePaperLinks(links) {
 
 function getOrganizationStyles(data) {
   const palette = [
-    // Built-in symbols with improved contrast for dark backgrounds
-    { color: '#4ade80', symbol: 'roundRect' }, // Bright green (better contrast)
-    { color: '#fb923c', symbol: 'rect' }, // Brighter orange
-    { color: '#60a5fa', symbol: 'triangle' }, // Lighter blue
-    { color: '#f472b6', symbol: 'diamond' }, // Brighter pink
-    { color: '#c084fc', symbol: 'circle' }, // Brighter purple
-    { color: '#94a3b8', symbol: 'emptyCircle' }, // Lighter gray
+    // Built-in symbols with improved contrast and color separation
+    { color: '#22c55e', symbol: 'roundRect' }, // Green
+    { color: '#f97316', symbol: 'rect' }, // Orange
+    { color: '#3b82f6', symbol: 'triangle' }, // Blue
+    { color: '#ec4899', symbol: 'diamond' }, // Pink
+    { color: '#8b5cf6', symbol: 'circle' }, // Purple
+    { color: '#64748b', symbol: 'emptyCircle' }, // Slate gray
     
-    // Custom path-based symbols with improved contrast
+    // Custom path-based symbols with well-separated colors
     // Star
-    { color: '#22d3ee', symbol: 'path://M15.422,18.129l-5.264-2.768l-5.265,2.768l1.006-5.863L1.64,8.114l5.887-0.855l2.632-5.334l2.633,5.334l5.885,0.855l-4.258,4.152L15.422,18.129z' }, // Brighter cyan
+    { color: '#06b6d4', symbol: 'path://M15.422,18.129l-5.264-2.768l-5.265,2.768l1.006-5.863L1.64,8.114l5.887-0.855l2.632-5.334l2.633,5.334l5.885,0.855l-4.258,4.152L15.422,18.129z' }, // Cyan
     // Diamond (custom)
-    { color: '#fbbf24', symbol: 'path://M0 8l8 -8l8 8l-8 8l-8 -8z' }, // Brighter yellow
+    { color: '#eab308', symbol: 'path://M0 8l8 -8l8 8l-8 8l-8 -8z' }, // Yellow
     // Hexagon
-    { color: '#f87171', symbol: 'path://M8 1L15.5 5.5L15.5 14.5L8 19L0.5 14.5L0.5 5.5Z' }, // Brighter red
+    { color: '#dc2626', symbol: 'path://M8 1L15.5 5.5L15.5 14.5L8 19L0.5 14.5L0.5 5.5Z' }, // Red
     // Cross
-    { color: '#818cf8', symbol: 'path://M2,7L7,7L7,2L9,2L9,7L14,7L14,9L9,9L9,14L7,14L7,9L2,9Z' }, // Brighter indigo
+    { color: '#7c3aed', symbol: 'path://M2,7L7,7L7,2L9,2L9,7L14,7L14,9L9,9L9,14L7,14L7,9L2,9Z' }, // Violet
     // Sun/Flower
-    { color: '#38bdf8', symbol: 'path://M6.993 12c0 2.761 2.246 5.007 5.007 5.007s5.007-2.246 5.007-5.007S14.761 6.993 12 6.993 6.993 9.239 6.993 12zM12 8.993c1.658 0 3.007 1.349 3.007 3.007S13.658 15.007 12 15.007 8.993 13.658 8.993 12 10.342 8.993 12 8.993zM10.998 19h2v3h-2zm0-17h2v3h-2zm-9 9h3v2h-3zm17 0h3v2h-3zM4.219 18.363l2.12-2.122 1.415 1.414-2.12 2.122zM16.24 6.344l2.122-2.122 1.414 1.414-2.122 2.122zM6.342 7.759 4.22 5.637l1.415-1.414 2.12 2.122zm13.434 10.605-1.414 1.414-2.122-2.122 1.414-1.414z' }, // Brighter sky blue
-    // Moon
-    { color: '#a78bfa', symbol: 'path://M10.719 2.082c-2.572 2.028-4.719 5.212-4.719 9.918 0 4.569 1.938 7.798 4.548 9.78-4.829-0.092-8.547-6.776-8.547-9.80 0-3.133 3.443-9.918 8.718-9.918z' }, // Brighter violet
+    { color: '#059669', symbol: 'path://M6.993 12c0 2.761 2.246 5.007 5.007 5.007s5.007-2.246 5.007-5.007S14.761 6.993 12 6.993 6.993 9.239 6.993 12zM12 8.993c1.658 0 3.007 1.349 3.007 3.007S13.658 15.007 12 15.007 8.993 13.658 8.993 12 10.342 8.993 12 8.993zM10.998 19h2v3h-2zm0-17h2v3h-2zm-9 9h3v2h-3zm17 0h3v2h-3zM4.219 18.363l2.12-2.122 1.415 1.414-2.12 2.122zM16.24 6.344l2.122-2.122 1.414 1.414-2.122 2.122zM6.342 7.759 4.22 5.637l1.415-1.414 2.12 2.122zm13.434 10.605-1.414 1.414-2.122-2.122 1.414-1.414z' }, // Emerald
+    // Pentagon
+    { color: '#d97706', symbol: 'path://M12 2L19.5 8.5L16.5 17.5L7.5 17.5L4.5 8.5Z' }, // Amber
     // Lightning Bolt
-    { color: '#34d399', symbol: 'path://M8 1L1 12L8 14L4 23L15 10L9 8L13 1Z' }, // Bright emerald
+    { color: '#be185d', symbol: 'path://M8 1L1 12L8 14L4 23L15 10L9 8L13 1Z' }, // Rose
     // Infinity
-    { color: '#fde047', symbol: 'path://M12.5,18c-5,0-5-8-10-8s-5,8-10,8s5-8,10-8S17.5,18,12.5,18z' }, // Brighter yellow
+    { color: '#0891b2', symbol: 'path://M12.5,18c-5,0-5-8-10-8s-5,8-10,8s5-8,10-8S17.5,18,12.5,18z' }, // Sky
     // Camera
-    { color: '#e5e7eb', symbol: 'path://M9 3h-4c-1.105 0-2 0.895-2 2v10c0 1.105 0.895 2 2 2h14c1.105 0 2-0.895 2-2v-10c0-1.105-0.895-2-2-2h-4l-2-2h-6l-2 2z' }, // Much lighter gray
+    { color: '#94a3b8', symbol: 'path://M9 3h-4c-1.105 0-2 0.895-2 2v10c0 1.105 0.895 2 2 2h14c1.105 0 2-0.895 2-2v-10c0-1.105-0.895-2-2-2h-4l-2-2h-6l-2 2z' }, // Slate
     // Cloud
-    { color: '#a3e635', symbol: 'path://M24 15c0 2.21-1.79 4-4 4h-12.5c-2.485 0-4.5-2.015-4.5-4.5 0-2.485 2.015-4.5 4.5-4.5 0.5 0 0.5 0 1 0.1 0.413-2.661 2.69-4.6 5-4.6 2.761 0 5 2.239 5 5 0 0.5-0.5 1-0.1 1.5 3.339 0.213 6.1 2.31 6.1 5z' }, // Brighter lime
+    { color: '#65a30d', symbol: 'path://M24 15c0 2.21-1.79 4-4 4h-12.5c-2.485 0-4.5-2.015-4.5-4.5 0-2.485 2.015-4.5 4.5-4.5 0.5 0 0.5 0 1 0.1 0.413-2.661 2.69-4.6 5-4.6 2.761 0 5 2.239 5 5 0 0.5-0.5 1-0.1 1.5 3.339 0.213 6.1 2.31 6.1 5z' }, // Lime
   ];
   
   if (!data || !Array.isArray(data) || data.length === 0) {
