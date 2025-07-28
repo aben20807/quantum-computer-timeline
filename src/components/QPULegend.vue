@@ -14,13 +14,12 @@
            alignItems: 'center',
            gap: '0.75rem',
            padding: '0.75rem 1.25rem',
-           borderRadius: '9999px',
-           background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)',
-           backdropFilter: 'blur(12px)',
-           border: '1px solid rgba(255,255,255,0.15)',
-           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+           borderRadius: '8px',
+           background: 'rgba(255,255,255,0.1)',
+           border: 'none',
+           transition: 'all 0.2s ease',
            cursor: 'pointer',
-           boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+           boxShadow: 'none',
            animationDelay: `${index * 0.1}s`,
            position: 'relative',
            overflow: 'hidden',
@@ -37,45 +36,37 @@
           <circle v-if="organization.symbol === 'circle'"
                   cx="12" cy="12" r="8"
                   :fill="organization.color"
-                  stroke="white"
-                  stroke-width="2.5"
-                  style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                  stroke="none"
+                  stroke-width="0" />
           
           <!-- Rectangle Symbol -->
           <rect v-else-if="organization.symbol === 'rect'"
                 x="5" y="5" width="14" height="14"
                 :fill="organization.color"
-                stroke="white"
-                stroke-width="2.5"
-                rx="2"
-                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                stroke="none"
+                stroke-width="0"
+                rx="2" />
           
           <!-- Triangle Symbol -->
           <polygon v-else-if="organization.symbol === 'triangle'"
                    points="12,4 20,18 4,18"
                    :fill="organization.color"
-                   stroke="white"
-                   stroke-width="2.5"
-                   stroke-linejoin="round"
-                   style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                   stroke="none"
+                   stroke-width="0" />
           
           <!-- Diamond Symbol -->
           <polygon v-else-if="organization.symbol === 'diamond'"
                    points="12,3 21,12 12,21 3,12"
                    :fill="organization.color"
-                   stroke="white"
-                   stroke-width="2.5"
-                   stroke-linejoin="round"
-                   style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                   stroke="none"
+                   stroke-width="0" />
           
           <!-- Pin Symbol -->
           <g v-else-if="organization.symbol === 'pin'">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
                   :fill="organization.color"
-                  stroke="white"
-                  stroke-width="2.5"
-                  stroke-linejoin="round"
-                  style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                  stroke="none"
+                  stroke-width="0" />
             <circle cx="12" cy="9" r="2.5" fill="white" />
           </g>
           
@@ -83,66 +74,48 @@
           <g v-else-if="organization.symbol === 'arrow'">
             <polygon points="2,12 10,4 10,8 22,8 22,16 10,16 10,20"
                      :fill="organization.color"
-                     stroke="white"
-                     stroke-width="2.5"
-                     stroke-linejoin="round"
-                     style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                     stroke="none"
+                     stroke-width="0" />
           </g>
           
           <!-- Rounded Rectangle Symbol -->
           <rect v-else-if="organization.symbol === 'roundRect'"
                 x="5" y="5" width="14" height="14"
                 :fill="organization.color"
-                stroke="white"
-                stroke-width="2.5"
-                rx="5" ry="5"
-                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                stroke="none"
+                stroke-width="0"
+                rx="5" ry="5" />
           
           <!-- Empty Circle Symbol -->
           <circle v-else-if="organization.symbol === 'emptyCircle'"
                   cx="12" cy="12" r="8"
                   fill="transparent"
                   :stroke="organization.color"
-                  stroke-width="3"
-                  style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                  stroke-width="2" />
           
           <!-- Empty Rectangle Symbol -->
           <rect v-else-if="organization.symbol === 'emptyRect'"
                 x="5" y="5" width="14" height="14"
                 fill="transparent"
                 :stroke="organization.color"
-                stroke-width="3"
-                rx="2"
-                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                stroke-width="2"
+                rx="2" />
           
           <!-- Custom Path Symbol -->
           <path v-else-if="organization.symbol && organization.symbol.startsWith('path://')"
                 :d="organization.symbol.replace('path://', '')"
                 :fill="organization.color"
-                stroke="white"
-                stroke-width="1.5"
-                transform="scale(0.75) translate(4, 4)"
-                style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                stroke="none"
+                stroke-width="0"
+                transform="scale(0.75) translate(4, 4)" />
                 
           <!-- Default to Circle for unknown symbols -->
           <circle v-else
                   cx="12" cy="12" r="8"
                   :fill="organization.color"
-                  stroke="white"
-                  stroke-width="2.5"
-                  style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+                  stroke="none"
+                  stroke-width="0" />
         </svg>
-        
-        <!-- Animated glow effect -->
-        <div :style="{
-               position: 'absolute',
-               width: '120%',
-               height: '120%',
-               borderRadius: '50%',
-               background: `radial-gradient(circle, ${organization.color}30 0%, transparent 70%)`,
-               animation: 'glow 3s ease-in-out infinite',
-               zIndex: 1
-             }"></div>
       </div>
       
       <!-- Organization Name -->
@@ -150,7 +123,6 @@
               fontSize: '0.9rem',
               fontWeight: '600',
               color: '#ffffff',
-              textShadow: '0 1px 3px rgba(0,0,0,0.7)',
               letterSpacing: '0.025em',
               position: 'relative',
               zIndex: 2,
@@ -160,22 +132,6 @@
             }">
         <span>{{ organization.name }} ({{ getQpuCount(organization.name) }})</span>
       </div>
-      
-      <!-- Shine effect overlay -->
-      <div :style="{
-             position: 'absolute',
-             top: 0,
-             left: 0,
-             right: 0,
-             bottom: 0,
-             borderRadius: '9999px',
-             background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%)',
-             pointerEvents: 'none',
-             opacity: 0,
-             transition: 'opacity 0.3s ease',
-             zIndex: 1
-           }"
-           class="shine-overlay"></div>
     </div>
   </div>
 </template>
@@ -237,30 +193,14 @@ watch(() => props.companies, (newValue) => {
 
 const onHover = (event) => {
   const target = event.currentTarget;
-  target.style.transform = 'translateY(-4px) scale(1.08)';
-  target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.4)';
-  target.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)';
-  target.style.borderColor = 'rgba(255,255,255,0.3)';
-  
-  // Show shine effect
-  const shine = target.querySelector('.shine-overlay');
-  if (shine) {
-    shine.style.opacity = '1';
-  }
+  target.style.transform = 'translateY(-2px)';
+  target.style.background = 'rgba(255,255,255,0.15)';
 };
 
 const onLeave = (event) => {
   const target = event.currentTarget;
   target.style.transform = '';
-  target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.25)';
-  target.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)';
-  target.style.borderColor = 'rgba(255,255,255,0.15)';
-  
-  // Hide shine effect
-  const shine = target.querySelector('.shine-overlay');
-  if (shine) {
-    shine.style.opacity = '0';
-  }
+  target.style.background = 'rgba(255,255,255,0.1)';
 };
 
 // Function to toggle organization visibility
@@ -277,17 +217,6 @@ const getQpuCount = (orgName) => {
 </script>
 
 <style scoped>
-@keyframes glow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
-}
-
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -316,7 +245,7 @@ const getQpuCount = (orgName) => {
 }
 
 .legend-item svg {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease;
 }
 
 /* Mobile responsiveness */

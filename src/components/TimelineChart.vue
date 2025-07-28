@@ -263,13 +263,13 @@ const renderChart = () => {
         return {
           value: [item[0], item[1]], // Now correctly interpreted as [time, value]
           symbol: style.symbol,
-          symbolSize: isMobile ? 10 : 18, // Much smaller on mobile
+          symbolSize: isMobile ? 12 : 20, // Slightly larger for flat design since no borders
           itemStyle: {
             color: style.color,
-            borderColor: '#fff',
-            borderWidth: isMobile ? 0.5 : 2, // Minimal border on mobile
-            shadowBlur: isMobile ? 3 : 10, // Minimal blur on mobile
-            shadowColor: 'rgba(0,0,0,0.4)'
+            borderColor: 'transparent', // Remove borders for flat design
+            borderWidth: 0, // No border for flat style
+            shadowBlur: 0, // Remove shadows for flat design
+            shadowColor: 'transparent'
           },
           qpuData: qpu,
           label: {
@@ -285,29 +285,31 @@ const renderChart = () => {
             fontSize: isMobile ? 7 : 10,
             fontWeight: 'bold',
             distance: isMobile ? 2 : 6,
-            backgroundColor: 'rgba(0,0,0,0.5)', // More transparent background
-            borderColor: style.color,
-            borderWidth: isMobile ? 0 : 1, // No border on mobile
+            backgroundColor: 'rgba(0,0,0,0.7)', // Solid background for flat design
+            borderColor: 'transparent', // Remove borders for flat design
+            borderWidth: 0, // No border for flat style
             borderRadius: isMobile ? 1 : 3,
             padding: isMobile ? [0, 2] : [2, 5], // Minimal padding on mobile
-            textShadowColor: 'rgba(0,0,0,0.8)',
-            textShadowBlur: isMobile ? 0 : 2, // No blur on mobile
+            textShadowColor: 'transparent', // Remove text shadow for flat design
+            textShadowBlur: 0, // No blur for flat style
             textShadowOffsetX: 0,
             textShadowOffsetY: 0
           }
         };
       }),
       emphasis: {
-        scale: 1.3,  // More subtle scaling
+        scale: 1.2,  // Subtle scaling for flat design
         itemStyle: {
-          shadowBlur: 15, // Reduced from 20 to 15 to match the smaller point size
-          shadowColor: 'rgba(255,255,255,0.4)',
-          borderWidth: 3  // Reduced from 4 to 3 to match the smaller point size
+          shadowBlur: 0, // Remove shadows for flat design
+          shadowColor: 'transparent',
+          borderWidth: 0, // No border for flat style
+          opacity: 0.8 // Slight opacity change for hover effect in flat design
         },
         label: {
           show: true,
-          fontSize: 12,
-          fontWeight: 'bold'
+          fontSize: isMobile ? 8 : 12,
+          fontWeight: 'bold',
+          backgroundColor: 'rgba(0,0,0,0.9)' // Stronger background on hover
         }
       }
     }],
