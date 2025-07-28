@@ -6,7 +6,7 @@ Hummingbird R2,IBM,Superconducting ,2020-08,65,"[{""title"":""ibm.com"", ""url""
 Eagle,IBM,Superconducting ,2021-11-16,127,"[{""title"":""ibm.com"",""url"":""https://www.ibm.com/quantum/blog/127-qubit-quantum-processor-eagle""}]",
 Eagle R3,IBM,Superconducting ,2022-12-21,127,"[{""title"":""ibm.com"", ""url"":""https://www.ibm.com/quantum/blog/eagle-quantum-error-mitigation""}]","R3 boasts a new architecture with higher qubit coherence, enabling lower gate errors despite longer gate lengths."
 Osprey,IBM,Superconducting ,2022-11-09,433,"[{""title"":""ibm.com"",""url"":""https://newsroom.ibm.com/2022-11-09-IBM-Unveils-400-Qubit-Plus-Quantum-Processor-and-Next-Generation-IBM-Quantum-System-Two""}]",
-Egret,,Superconducting ,2022-12,33,"[{""title"":""ibm.com"", ""url"":""https://quantum.cloud.ibm.com/docs/en/guides/processor-types""}]",
+Egret,IBM,Superconducting ,2022-12,33,"[{""title"":""ibm.com"", ""url"":""https://quantum.cloud.ibm.com/docs/en/guides/processor-types""}]",
 Heron,IBM,Superconducting ,2023-12-04,133,"[{""title"":""ibm.com"",""url"":""https://www.ibm.com/quantum/blog/quantum-roadmap-2033""}]","Featuring a record-low error rate, three times lower than its predecessor from IBM."
 Condor,IBM,Superconducting ,2023-12-04,1121,"[{""title"":""ibm.com"",""url"":""https://www.ibm.com/quantum/blog/quantum-roadmap-2033""}]",
 Heron R2,IBM,Superconducting ,2024-11-13,156,"[{""title"":""IBM Heron R2"",""url"":""https://newsroom.ibm.com/2024-11-13-ibm-launches-its-most-advanced-quantum-computers%2C-fueling-new-scientific-value-and-progress-towards-quantum-advantage""}]",
@@ -29,7 +29,7 @@ H2-1,Quantinuum,Trapped ion,2024-06-05,56,"[{""title"":""quantinuum.com"", ""url
 One,D‑Wave,Annealing,2011-05-11,128,"[{""title"":""paper"", ""url"":""https://www.nature.com/articles/nature10012""}]",
 Two,D‑Wave,Annealing,2013-05-16,512,"[{""title"":""news"", ""url"":""https://spacenews.com/d-wave-twotm-quantum-computer-selected-for-new-quantum-artificial-intelligence-initiative/""}]",
 2X,D‑Wave,Annealing,2015-08-20,1000,"[{""title"":""paper"", ""url"":""https://arxiv.org/abs/1508.05087""}]",
-2000Q,D‑Wave,Annealing,,2048,https://www.hpcwire.com/off-the-wire/d-wave-introduces-2000q-quantum-computer/,
+2000Q,D‑Wave,Annealing,2017-01-24,2048,"[{""title"":""hpcwire.com"",""url"":""https://www.hpcwire.com/off-the-wire/d-wave-introduces-2000q-quantum-computer/""}]",
 Advantage,D‑Wave,Annealing,2019-02-17,5760,"[{""title"":""dwave.com"", ""url"":""https://web.archive.org/web/20190319213109/https://www.dwavesys.com/press-releases/d-wave-previews-next-generation-quantum-computing-platform""}]",Increasing the per-qubit connections to 15
 Advantage2,D‑Wave,Annealing,2025-05-20,4400,"[{""title"":""dwave.com"", ""url"":""https://www.dwavequantum.com/company/newsroom/press-release/d-wave-announces-general-availability-of-advantage2-quantum-computer-its-most-advanced-and-performant-system/""}]",Increasing the per-qubit connections to 20
 Agave,Rigetti,Superconducting ,2017-06-04,8,"[{""title"":""rigetti.com"", ""url"":""https://www.rigetti.com/what-we-build""}]",
