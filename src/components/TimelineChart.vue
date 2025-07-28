@@ -437,20 +437,55 @@ const renderChart = () => {
         const qpu = item[3];
         const style = getOrganizationStyle(qpu.organization);
         
-        // Smart label positioning to prevent overlaps
-        const shouldShowLabel = isMobile 
-          ? (chartData.length > 15 ? index % 4 === 0 : index % 2 === 0) // Show fewer labels on mobile
-          : true;
+        // Enhanced label positioning to maximize visibility while preventing overlaps
+        const totalPoints = chartData.length;
+        let shouldShowLabel = true;
+        let labelPosition = 'top';
+        let labelDistance = isMobile ? 4 : 6;
         
-        // Alternating label positions to reduce overlaps
-        const labelPosition = index % 2 === 0 ? 'top' : 'bottom';
-        const labelDistance = isMobile ? 4 : 6; // Reduced distance to bring labels closer
-        
-        // For dense data, use more aggressive spacing
-        const isDenseData = chartData.length > 50;
-        const finalLabelShow = isDenseData 
-          ? (isMobile ? index % 6 === 0 : index % 3 === 0)
-          : shouldShowLabel;
+        // Dynamic positioning using top/bottom/left/right to avoid overlaps
+        if (totalPoints > 40) {
+          // For very dense data, use 8-pattern rotation with all directional positions
+          const positionInGroup = index % 8;
+          switch (positionInGroup) {
+            case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
+            case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
+            case 2: labelPosition = 'left'; labelDistance = isMobile ? 6 : 8; break;
+            case 3: labelPosition = 'right'; labelDistance = isMobile ? 6 : 8; break;
+            case 4: labelPosition = 'top'; labelDistance = isMobile ? 7 : 10; break;
+            case 5: labelPosition = 'bottom'; labelDistance = isMobile ? 7 : 10; break;
+            case 6: labelPosition = 'left'; labelDistance = isMobile ? 4 : 5; break;
+            case 7: labelPosition = 'right'; labelDistance = isMobile ? 4 : 5; break;
+          }
+          // Reduce mobile hiding - only hide if extremely dense
+          if (isMobile && totalPoints > 80) {
+            shouldShowLabel = index % 2 === 0; // Show every other instead of every 3rd
+          }
+        } else if (totalPoints > 20) {
+          // Medium-high density: use 6-pattern rotation with directional variety
+          const pattern = index % 6;
+          switch (pattern) {
+            case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
+            case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
+            case 2: labelPosition = 'left'; labelDistance = isMobile ? 5 : 7; break;
+            case 3: labelPosition = 'right'; labelDistance = isMobile ? 5 : 7; break;
+            case 4: labelPosition = 'top'; labelDistance = isMobile ? 6 : 9; break;
+            case 5: labelPosition = 'bottom'; labelDistance = isMobile ? 6 : 9; break;
+          }
+        } else if (totalPoints > 10) {
+          // Medium density: use 4-pattern alternating with varied distances
+          const pattern = index % 4;
+          switch (pattern) {
+            case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
+            case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
+            case 2: labelPosition = 'top'; labelDistance = isMobile ? 6 : 8; break;
+            case 3: labelPosition = 'bottom'; labelDistance = isMobile ? 6 : 8; break;
+          }
+        } else {
+          // Low density: simple alternating with close positioning
+          labelPosition = index % 2 === 0 ? 'top' : 'bottom';
+          labelDistance = isMobile ? 4 : 6;
+        }
         
         return {
           value: [item[0], item[1]], // Now correctly interpreted as [time, value]
@@ -465,16 +500,16 @@ const renderChart = () => {
           },
           qpuData: qpu,
           label: {
-            show: finalLabelShow,
-            position: labelPosition, // Alternating top/bottom positions
+            show: shouldShowLabel,
+            position: labelPosition,
             formatter: isMobile
               ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name) // Even shorter names on mobile
               : qpu.name,
             color: '#fff',
             fontSize: isMobile ? 9 : 12, // Increased from 7/10 to 9/12
             fontWeight: 'bold',
-            distance: labelDistance, // Increased distance to prevent overlaps
-            backgroundColor: 'rgba(0,0,0,0.7)', // Solid background for flat design
+            distance: labelDistance,
+            backgroundColor: labelPosition === 'inside' ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.7)', // Darker background for inside labels
             borderColor: 'transparent', // Remove borders for flat design
             borderWidth: 0, // No border for flat style
             borderRadius: isMobile ? 1 : 3,
@@ -540,15 +575,47 @@ const renderChart = () => {
             const qpu = item[3];
             const style = getOrganizationStyle(qpu.organization);
             
-            // Adjust label density based on zoom level
+            // Adjust label density and positioning based on zoom level - now shows MORE labels
+            const totalPoints = newChartData.length;
             let labelShowFrequency = 1;
-            if (zoomLevel > 80) labelShowFrequency = 6;      // Very zoomed out
-            else if (zoomLevel > 60) labelShowFrequency = 4;  // Moderately zoomed out
-            else if (zoomLevel > 40) labelShowFrequency = 2;  // Slightly zoomed out
-            else labelShowFrequency = 1;                      // Zoomed in
+            let shouldShowLabel = true;
+            let labelPosition = 'top';
+            let labelDistance = isMobile ? 4 : 6;
             
-            const shouldShowLabel = isMobile 
-              ? index % (labelShowFrequency * 2) === 0
+            // More conservative frequency adjustment - show more labels
+            if (zoomLevel > 90) labelShowFrequency = 3;       // Only hide when extremely zoomed out
+            else if (zoomLevel > 75) labelShowFrequency = 2;  // Moderately zoomed out
+            else labelShowFrequency = 1;                      // Show all when reasonable zoom
+            
+            // Apply sophisticated positioning based on zoom and density
+            if (zoomLevel < 60 && totalPoints > 20) {
+              // When zoomed in enough, use sophisticated directional positioning
+              const positionInGroup = index % 6;
+              switch (positionInGroup) {
+                case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
+                case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
+                case 2: labelPosition = 'left'; labelDistance = isMobile ? 5 : 7; break;
+                case 3: labelPosition = 'right'; labelDistance = isMobile ? 5 : 7; break;
+                case 4: labelPosition = 'top'; labelDistance = isMobile ? 6 : 9; break;
+                case 5: labelPosition = 'bottom'; labelDistance = isMobile ? 6 : 9; break;
+              }
+            } else if (totalPoints > 10) {
+              // Medium complexity positioning with directional variety
+              const pattern = index % 4;
+              switch (pattern) {
+                case 0: labelPosition = 'top'; labelDistance = isMobile ? 4 : 6; break;
+                case 1: labelPosition = 'bottom'; labelDistance = isMobile ? 4 : 6; break;
+                case 2: labelPosition = 'left'; labelDistance = isMobile ? 5 : 7; break;
+                case 3: labelPosition = 'right'; labelDistance = isMobile ? 5 : 7; break;
+              }
+            } else {
+              // Simple alternating for sparse data
+              labelPosition = index % 2 === 0 ? 'top' : 'bottom';
+            }
+            
+            // Less aggressive hiding - only when really necessary
+            shouldShowLabel = isMobile 
+              ? (zoomLevel > 90 ? index % (labelShowFrequency * 2) === 0 : index % labelShowFrequency === 0)
               : index % labelShowFrequency === 0;
             
             return {
@@ -565,14 +632,14 @@ const renderChart = () => {
               qpuData: qpu,
               label: {
                 show: shouldShowLabel,
-                position: index % 2 === 0 ? 'top' : 'bottom', // Maintain alternating positions
+                position: labelPosition,
                 formatter: isMobile
                   ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name)
                   : qpu.name,
                 color: '#fff',
                 fontSize: zoomLevel < 30 ? (isMobile ? 10 : 13) : (isMobile ? 9 : 12),
                 fontWeight: 'bold',
-                distance: isMobile ? 4 : 6, // Reduced distance to match main chart
+                distance: labelDistance,
                 backgroundColor: 'rgba(0,0,0,0.7)',
                 borderColor: 'transparent',
                 borderWidth: 0,
