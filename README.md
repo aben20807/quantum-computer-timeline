@@ -29,6 +29,7 @@ The application uses a CSV file (`public/data/qpu_timeline.csv`) with the follow
 |-------|-------------|
 | name | Name of the quantum computer |
 | organization | Research institution or company that developed the QPU |
+| type | Type of quantum computing technology (e.g., Superconducting, Trapped Ion, Photonic, etc.) |
 | releaseDate | Date when the QPU was announced or published |
 | qubitCount | Number of qubits in the quantum processor |
 | externalLink | JSON array of research papers with title and URL |
