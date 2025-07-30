@@ -505,18 +505,20 @@ const renderChart = () => {
       name: 'QPU Data',
       data: generateSeriesData(chartData, isMobile, currentHoveredOrganization),
       emphasis: {
-        scale: 1.2,  // Subtle scaling for flat design
+        scale: 1.0,  // Disable scaling to keep consistency with organization highlighting
         itemStyle: {
-          shadowBlur: 0, // Remove shadows for flat design
-          shadowColor: 'transparent',
-          borderWidth: 0, // No border for flat style
-          opacity: 0.8 // Slight opacity change for hover effect in flat design
+          shadowBlur: 10, // Add shadow to match organization highlighting
+          shadowColor: 'rgba(255, 255, 255, 0.5)', // White shadow for the hovered point
+          borderColor: '#fff', // White border to match other highlighted points
+          borderWidth: 2, // Same border width as organization highlighting
+          opacity: 1.0 // Keep full opacity to match organization highlighting
         },
         label: {
           show: true,
-          fontSize: isMobile ? 10 : 14, // Increased from 8/12 to 10/14
+          fontSize: isMobile ? 11 : 14, // Match the organization highlighting font size
           fontWeight: 'bold',
-          backgroundColor: 'rgba(0,0,0,0.9)' // Stronger background on hover
+          backgroundColor: 'rgba(0,0,0,0.9)', // Match organization highlighting background
+          color: '#fff' // White text to match other highlighted points
         }
       }
     }],

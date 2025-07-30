@@ -37,35 +37,35 @@ function parsePaperLinks(links) {
 
 function getOrganizationStyles(data) {
   const palette = [
-    // Built-in symbols with improved contrast and color separation
-    { color: '#22c55e', symbol: 'roundRect' }, // Green
-    { color: '#f97316', symbol: 'rect' }, // Orange
-    { color: '#3b82f6', symbol: 'triangle' }, // Blue
-    { color: '#ec4899', symbol: 'diamond' }, // Pink
-    { color: '#8b5cf6', symbol: 'circle' }, // Purple
-    { color: '#64748b', symbol: 'emptyCircle' }, // Slate gray
+    // High-contrast colors with maximum distinguishability
+    { color: '#22c55e', symbol: 'roundRect' }, // Bright Green
+    { color: '#ff4500', symbol: 'rect' }, // Orange Red
+    { color: '#1e90ff', symbol: 'triangle' }, // Dodger Blue
+    { color: '#ff1493', symbol: 'diamond' }, // Deep Pink
+    { color: '#9932cc', symbol: 'circle' }, // Dark Orchid
+    { color: '#708090', symbol: 'emptyCircle' }, // Slate Gray
     
-    // Custom path-based symbols with well-separated colors
+    // Custom path-based symbols with highly distinct colors
     // Star
-    { color: '#06b6d4', symbol: 'path://M15.422,18.129l-5.264-2.768l-5.265,2.768l1.006-5.863L1.64,8.114l5.887-0.855l2.632-5.334l2.633,5.334l5.885,0.855l-4.258,4.152L15.422,18.129z' }, // Cyan
+    { color: '#00ced1', symbol: 'path://M15.422,18.129l-5.264-2.768l-5.265,2.768l1.006-5.863L1.64,8.114l5.887-0.855l2.632-5.334l2.633,5.334l5.885,0.855l-4.258,4.152L15.422,18.129z' }, // Dark Turquoise
     // Diamond (custom)
-    { color: '#eab308', symbol: 'path://M0 8l8 -8l8 8l-8 8l-8 -8z' }, // Yellow
+    { color: '#ffd700', symbol: 'path://M0 8l8 -8l8 8l-8 8l-8 -8z' }, // Gold
     // Hexagon
-    { color: '#dc2626', symbol: 'path://M8 1L15.5 5.5L15.5 14.5L8 19L0.5 14.5L0.5 5.5Z' }, // Red
+    { color: '#dc143c', symbol: 'path://M8 1L15.5 5.5L15.5 14.5L8 19L0.5 14.5L0.5 5.5Z' }, // Crimson
     // Cross
-    { color: '#7c3aed', symbol: 'path://M2,7L7,7L7,2L9,2L9,7L14,7L14,9L9,9L9,14L7,14L7,9L2,9Z' }, // Violet
-    // Sun/Flower
-    { color: '#059669', symbol: 'path://M6.993 12c0 2.761 2.246 5.007 5.007 5.007s5.007-2.246 5.007-5.007S14.761 6.993 12 6.993 6.993 9.239 6.993 12zM12 8.993c1.658 0 3.007 1.349 3.007 3.007S13.658 15.007 12 15.007 8.993 13.658 8.993 12 10.342 8.993 12 8.993zM10.998 19h2v3h-2zm0-17h2v3h-2zm-9 9h3v2h-3zm17 0h3v2h-3zM4.219 18.363l2.12-2.122 1.415 1.414-2.12 2.122zM16.24 6.344l2.122-2.122 1.414 1.414-2.122 2.122zM6.342 7.759 4.22 5.637l1.415-1.414 2.12 2.122zm13.434 10.605-1.414 1.414-2.122-2.122 1.414-1.414z' }, // Emerald
+    { color: '#8a2be2', symbol: 'path://M2,7L7,7L7,2L9,2L9,7L14,7L14,9L9,9L9,14L7,14L7,9L2,9Z' }, // Blue Violet
+    // Star (8-pointed)
+    { color: '#228b22', symbol: 'path://M12 2L14 8L20 6L16 12L20 18L14 16L12 22L10 16L4 18L8 12L4 6L10 8Z' }, // Forest Green
     // Pentagon
-    { color: '#d97706', symbol: 'path://M12 2L19.5 8.5L16.5 17.5L7.5 17.5L4.5 8.5Z' }, // Amber
+    { color: '#ff8c00', symbol: 'path://M12 2L19.5 8.5L16.5 17.5L7.5 17.5L4.5 8.5Z' }, // Dark Orange
     // Lightning Bolt
-    { color: '#be185d', symbol: 'path://M8 1L1 12L8 14L4 23L15 10L9 8L13 1Z' }, // Rose
+    { color: '#c71585', symbol: 'path://M8 1L1 12L8 14L4 23L15 10L9 8L13 1Z' }, // Medium Violet Red
     // Infinity
-    { color: '#0891b2', symbol: 'path://M12.5,18c-5,0-5-8-10-8s-5,8-10,8s5-8,10-8S17.5,18,12.5,18z' }, // Sky
+    { color: '#4682b4', symbol: 'path://M12.5,18c-5,0-5-8-10-8s-5,8-10,8s5-8,10-8S17.5,18,12.5,18z' }, // Steel Blue
     // Camera
-    { color: '#94a3b8', symbol: 'path://M9 3h-4c-1.105 0-2 0.895-2 2v10c0 1.105 0.895 2 2 2h14c1.105 0 2-0.895 2-2v-10c0-1.105-0.895-2-2-2h-4l-2-2h-6l-2 2z' }, // Slate
+    { color: '#2f4f4f', symbol: 'path://M9 3h-4c-1.105 0-2 0.895-2 2v10c0 1.105 0.895 2 2 2h14c1.105 0 2-0.895 2-2v-10c0-1.105-0.895-2-2-2h-4l-2-2h-6l-2 2z' }, // Dark Slate Gray
     // Cloud
-    { color: '#65a30d', symbol: 'path://M24 15c0 2.21-1.79 4-4 4h-12.5c-2.485 0-4.5-2.015-4.5-4.5 0-2.485 2.015-4.5 4.5-4.5 0.5 0 0.5 0 1 0.1 0.413-2.661 2.69-4.6 5-4.6 2.761 0 5 2.239 5 5 0 0.5-0.5 1-0.1 1.5 3.339 0.213 6.1 2.31 6.1 5z' }, // Lime
+    { color: '#32cd32', symbol: 'path://M24 15c0 2.21-1.79 4-4 4h-12.5c-2.485 0-4.5-2.015-4.5-4.5 0-2.485 2.015-4.5 4.5-4.5 0.5 0 0.5 0 1 0.1 0.413-2.661 2.69-4.6 5-4.6 2.761 0 5 2.239 5 5 0 0.5-0.5 1-0.1 1.5 3.339 0.213 6.1 2.31 6.1 5z' }, // Lime Green
   ];
   
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -311,26 +311,32 @@ function switchLockedTooltip(qpu, event) {
   // Replace the locked tooltip with new one and recalculate position
   selectedQPU.value = qpu;
   
-  // Recalculate position for the new tooltip
+  // Recalculate position for the new tooltip using the same logic as handlePointHover
   const tooltipWidth = 280; 
   const tooltipHeight = 200; 
   const margin = 15;
   const baseOffset = 25;
   
+  // Get the chart container bounds to determine safe areas
+  const chartElement = document.querySelector('[role="img"]');
+  const chartRect = chartElement ? chartElement.getBoundingClientRect() : null;
+  
   let x = event.clientX + baseOffset;
   let y = event.clientY - baseOffset;
   
+  // Smart positioning logic based on quadrants
   const screenCenterX = window.innerWidth / 2;
   const screenCenterY = window.innerHeight / 2;
   const isLeftSide = event.clientX < screenCenterX;
   const isTopSide = event.clientY < screenCenterY;
   
+  // Position tooltip in the opposite quadrant when possible
   if (isLeftSide && isTopSide) {
     x = event.clientX + baseOffset;
     y = event.clientY + baseOffset;
   } else if (!isLeftSide && isTopSide) {
     x = event.clientX - tooltipWidth - baseOffset;
-    y = event.clientY + baseOffset;
+    y = event.clientY + baseOffset;  
   } else if (isLeftSide && !isTopSide) {
     x = event.clientX + baseOffset;
     y = event.clientY - tooltipHeight - baseOffset;
@@ -339,7 +345,22 @@ function switchLockedTooltip(qpu, event) {
     y = event.clientY - tooltipHeight - baseOffset;
   }
   
-  // Boundary checks
+  // If tooltip is within chart area (where highlighted points are), push it further
+  if (chartRect && 
+      x < chartRect.right && 
+      x + tooltipWidth > chartRect.left &&
+      y < chartRect.bottom && 
+      y + tooltipHeight > chartRect.top) {
+    
+    // Push tooltip outside chart area
+    if (isLeftSide) {
+      x = Math.max(chartRect.right + margin, x);
+    } else {
+      x = Math.min(chartRect.left - tooltipWidth - margin, x);
+    }
+  }
+  
+  // Final boundary checks
   if (x + tooltipWidth > window.innerWidth - margin) {
     x = window.innerWidth - tooltipWidth - margin;
   }
