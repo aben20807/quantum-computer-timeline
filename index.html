@@ -11,25 +11,91 @@
     
     <!-- Primary Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quantum Computer Timeline | QPU Evolution Visualization</title>
-    <meta name="description" content="Interactive visualization of quantum computing hardware development across different organizations and research teams" />
+    <title>Quantum Computer Timeline | Interactive QPU Evolution Visualization | Quantum Computing History</title>
+    <meta name="description" content="Explore the evolution of quantum computers with our interactive timeline. Track QPU development from IBM, Google, IonQ, Rigetti and more. Comprehensive quantum computing history from 2000-2024." />
+    <meta name="keywords" content="quantum computer, quantum computing, QPU, quantum processor, quantum timeline, IBM quantum, Google quantum, quantum hardware, quantum evolution, superconducting qubits, trapped ion, photonic quantum" />
+    <meta name="author" content="aben20807" />
+    <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#2196f3" />
+    <link rel="canonical" href="https://aben20807.github.io/quantum-computer-timeline/" />
     <link rel="manifest" href="./manifest.json" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Quantum Computer Timeline | QPU Evolution Visualization" />
-    <meta property="og:description" content="Explore the evolution of quantum processors from various organizations and research teams since the beginning of quantum computing" />
-    <meta property="og:image" content="./qpu-social-cover.svg" />
+    <meta property="og:site_name" content="Quantum Computer Timeline" />
+    <meta property="og:title" content="Interactive Quantum Computer Timeline | QPU Evolution Visualization" />
+    <meta property="og:description" content="Explore the evolution of quantum processors from IBM, Google, IonQ, Rigetti and leading quantum computing organizations. Interactive timeline showing qubit counts, release dates, and technology breakthroughs from 2000-2024." />
+    <meta property="og:image" content="https://aben20807.github.io/quantum-computer-timeline/qpu-social-cover.svg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Quantum Computer Timeline visualization showing the evolution of quantum processors" />
+    <meta property="og:url" content="https://aben20807.github.io/quantum-computer-timeline/" />
+    <meta property="og:locale" content="en_US" />
     
     <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Quantum Computer Timeline | QPU Evolution Visualization" />
-    <meta name="twitter:description" content="Interactive timeline showing the development of quantum processors across the industry" />
-    <meta name="twitter:image" content="/qpu-social-cover.svg" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@aben20807" />
+    <meta name="twitter:creator" content="@aben20807" />
+    <meta name="twitter:title" content="Interactive Quantum Computer Timeline | QPU Evolution" />
+    <meta name="twitter:description" content="Track the evolution of quantum computers from IBM, Google, IonQ and more. Interactive timeline with qubit counts and breakthrough dates." />
+    <meta name="twitter:image" content="https://aben20807.github.io/quantum-computer-timeline/qpu-social-cover.svg" />
+    <meta name="twitter:image:alt" content="Quantum Computer Timeline visualization" />
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="application-name" content="Quantum Computer Timeline" />
+    <meta name="apple-mobile-web-app-title" content="QPU Timeline" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Quantum Computer Timeline",
+      "alternateName": "QPU Timeline Visualization",
+      "description": "Interactive visualization tool that tracks the evolution of quantum processing units (QPUs) over time, showing development by various research organizations with details on qubit count, release dates, and research papers.",
+      "url": "https://aben20807.github.io/quantum-computer-timeline/",
+      "author": {
+        "@type": "Person",
+        "name": "aben20807",
+        "url": "https://github.com/aben20807"
+      },
+      "creator": {
+        "@type": "Person",
+        "name": "aben20807",
+        "url": "https://github.com/aben20807"
+      },
+      "applicationCategory": "Educational Technology",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript",
+      "screenshot": "https://aben20807.github.io/quantum-computer-timeline/qpu-social-cover.svg",
+      "featureList": [
+        "Interactive timeline chart",
+        "Organization-based color coding",
+        "Detailed QPU information on hover",
+        "Research paper references",
+        "Responsive design for mobile and desktop",
+        "Progressive Web App support",
+        "Logarithmic scaling for qubit counts",
+        "Zoom and filter capabilities"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Quantum Computing",
+        "description": "The field of quantum computing and quantum processor development"
+      },
+      "keywords": "quantum computer, quantum computing, QPU, quantum processor, quantum timeline, IBM quantum, Google quantum, quantum hardware, quantum evolution",
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "dateCreated": "2024-01-01",
+      "dateModified": "2025-01-01",
+      "version": "1.0"
+    }
+    </script>
+    
     <link rel="stylesheet" href="/loading.css">
   </head>
   <body>
@@ -40,6 +106,19 @@
     </div>
     <script type="module" src="/src/main.js"></script>
     <script>
+      // Service Worker Registration for better performance and offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+      }
+
       // Hide loading screen once app is rendered
       window.addEventListener('load', function() {
         setTimeout(function() {

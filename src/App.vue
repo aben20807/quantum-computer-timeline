@@ -195,29 +195,40 @@ function resetOrganizationVisibility() {
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white flex flex-col items-center">
-    <header class="w-full py-8 text-center bg-gradient-to-r from-blue-700 to-purple-700 shadow-lg mb-8">
+    <!-- Semantic Header with structured data -->
+    <header class="w-full py-8 text-center bg-gradient-to-r from-blue-700 to-purple-700 shadow-lg mb-8" role="banner">
       <h1 class="text-4xl font-extrabold tracking-tight drop-shadow-lg animate-pulse">Quantum Computer Timeline</h1>
       <p class="text-lg mt-2 opacity-80">Explore the evolution of QPUs, their organizations, and breakthroughs</p>
     </header>
-    <main class="w-full px-4 flex flex-col gap-8">
-      <div class="max-w-7xl mx-auto w-full">
+    
+    <!-- Main content area -->
+    <main class="w-full px-4 flex flex-col gap-8" role="main">
+      <!-- About section -->
+      <section class="max-w-7xl mx-auto w-full" aria-labelledby="about-heading">
         <AboutSection />
-      </div>
-      <div class="max-w-7xl mx-auto w-full">
+      </section>
+      
+      <!-- Interactive timeline section -->
+      <section class="max-w-7xl mx-auto w-full" aria-labelledby="timeline-heading">
+        <h2 id="timeline-heading" class="sr-only">Interactive Quantum Computer Timeline</h2>
         <TimelineChart 
           :data="qpuData" 
           :organization-styles="organizations"
           :visible-organizations="visibleOrganizations"
           @point-hover="handlePointHover" 
           @mouseleave="handleChartLeave" 
+          role="img"
+          aria-label="Interactive timeline chart showing quantum computer evolution by organization and qubit count over time"
         />
-      </div>
-      <div class="max-w-7xl mx-auto w-full">
+      </section>
+      
+      <!-- Organizations legend section -->
+      <section class="max-w-7xl mx-auto w-full" aria-labelledby="organizations-heading">
         <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h2 class="text-lg font-medium text-gray-200">Organizations</h2>
-              <div class="text-sm text-gray-400 mt-1">
+              <h2 id="organizations-heading" class="text-lg font-medium text-gray-200">Organizations</h2>
+              <div class="text-sm text-gray-400 mt-1" aria-live="polite">
                 Showing {{ visibleOrganizations.size }} of {{ organizations.length }} organizations
               </div>
             </div>
@@ -226,8 +237,9 @@ function resetOrganizationVisibility() {
               class="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-sm font-medium rounded-full transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
               :disabled="visibleOrganizations.size === organizations.length"
               :class="{ 'opacity-50 cursor-not-allowed hover:shadow-md hover:transform-none': visibleOrganizations.size === organizations.length }"
+              aria-label="Show all organizations in the timeline"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
               <span class="font-semibold">Show All</span>
@@ -237,17 +249,21 @@ function resetOrganizationVisibility() {
             :companies="organizations" 
             :visible-organizations="visibleOrganizations"
             :qpu-data="qpuData"
-            @toggle-organization="toggleOrganizationVisibility" 
+            @toggle-organization="toggleOrganizationVisibility"
+            role="list"
+            aria-label="List of quantum computing organizations with toggle controls"
           />
           <!-- Display debug info if legend is empty -->
-          <div v-if="!organizations || !organizations.length" class="text-center text-red-400 mt-4">
+          <div v-if="!organizations || !organizations.length" class="text-center text-red-400 mt-4" role="alert">
             <p>Debug: No organizations data available.</p>
           </div>
         </div>
-      </div>
-      <div class="max-w-7xl mx-auto w-full">
+      </section>
+      
+      <!-- Quantum computing technologies section -->
+      <section class="max-w-7xl mx-auto w-full" aria-labelledby="technologies-heading">
         <div class="bg-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm border border-white/10">
-          <h2 class="text-lg font-medium text-gray-200 mb-4">Quantum Computing Technologies</h2>
+          <h2 id="technologies-heading" class="text-lg font-medium text-gray-200 mb-4">Quantum Computing Technologies</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="bg-white/5 rounded-lg p-4 border border-white/10">
               <h3 class="text-blue-300 font-semibold text-base mb-2">Superconducting</h3>
@@ -299,10 +315,14 @@ function resetOrganizationVisibility() {
             </div>
           </div>
         </div>
-      </div>
-      <div class="max-w-7xl mx-auto w-full">
+      </section>
+      
+      <!-- Disclaimer section -->
+      <section class="max-w-7xl mx-auto w-full" aria-labelledby="disclaimer-heading">
         <DisclaimerSection />
-      </div>
+      </section>
+      
+      <!-- Tooltip overlay -->
       <transition name="fade">
         <div v-if="showTooltip" 
              :style="{ 
@@ -312,12 +332,18 @@ function resetOrganizationVisibility() {
                zIndex: 1000
              }"
              @mouseenter="handleTooltipMouseEnter"
-             @mouseleave="handleTooltipMouseLeave">
+             @mouseleave="handleTooltipMouseLeave"
+             role="tooltip"
+             aria-live="polite">
           <QPUDetailTooltip :qpu="selectedQPU" />
         </div>
       </transition>
     </main>
-    <footer class="mt-12 mb-4 text-sm opacity-80">2025 &copy; <a href="https://github.com/aben20807" class="footer-link" target="_blank">aben20807</a></footer>
+    
+    <!-- Footer -->
+    <footer class="mt-12 mb-4 text-sm opacity-80" role="contentinfo">
+      <p>2025 &copy; <a href="https://github.com/aben20807" class="footer-link" target="_blank" rel="noopener noreferrer">aben20807</a></p>
+    </footer>
   </div>
 </template>
 

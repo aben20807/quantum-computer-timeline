@@ -1,11 +1,16 @@
 {
-  "name": "QPU Timeline Visualization",
+  "name": "Quantum Computer Timeline - Interactive QPU Evolution Visualization",
   "short_name": "QPU Timeline",
-  "description": "Interactive visualization of quantum computer evolution",
+  "description": "Interactive visualization of quantum computer evolution. Track QPU development from IBM, Google, IonQ, Rigetti and more with detailed qubit counts, release dates, and research paper references.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "orientation": "any",
+  "background_color": "#1e1b4b",
   "theme_color": "#2196f3",
+  "categories": ["education", "productivity", "utilities"],
+  "lang": "en-US",
+  "scope": "/",
+  "id": "quantum-computer-timeline",
   "icons": [
     {
       "src": "/qpu-icon-192.svg",
@@ -24,6 +29,15 @@
       "sizes": "64x64",
       "type": "image/svg+xml",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/qpu-social-cover.svg",
+      "sizes": "1200x630",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Main timeline view showing quantum computer evolution"
     }
   ]
 }
