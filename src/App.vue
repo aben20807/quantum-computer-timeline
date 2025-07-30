@@ -166,7 +166,7 @@ function startLockCountdown(qpu, event = null) {
   tooltipState.isLocking = true;
   lockProgress.value = 0;
   
-  const lockDuration = 5000; // 5 seconds
+  const lockDuration = 3000; // 5 seconds
   const progressStep = 100 / (lockDuration / 50); // Update every 50ms
   
   // Start progress animation
@@ -655,7 +655,7 @@ function resetOrganizationVisibility() {
           <!-- Progress indicator when approaching lock -->
           <div v-if="lockProgress > 0 && lockProgress < 100" class="tooltip-progress-indicator">
             <div class="progress-bar" :style="{ width: lockProgress + '%' }"></div>
-            <span class="progress-text">Keep hovering for 5s to lock...</span>
+            <span class="progress-text">Keep hovering for 3s to lock...</span>
           </div>
           
           <!-- Lock indicator when locked -->
@@ -700,7 +700,7 @@ function resetOrganizationVisibility() {
 /* Tooltip lock indicator */
 .tooltip-lock-indicator {
   position: absolute;
-  top: -32px;
+  bottom: -32px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(34, 197, 94, 0.9);
@@ -768,7 +768,7 @@ function resetOrganizationVisibility() {
 }
 
 @keyframes lock-indicator-appear {
-  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
