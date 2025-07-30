@@ -1,49 +1,41 @@
-// Service Worker for Quantum Computer Timeline
-// Provides offline functionality and performance improvements
+// Service Worker for Quantum Computer Timeline - TESTING MODE
+// ALL CACHING DISABLED - Forces fresh content from network
 
 const CACHE_NAME = 'qpu-timeline-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/data/qpu_timeline.csv',
-  '/enhanced-qpu-favicon.svg',
-  '/qpu-social-cover.svg',
-  '/manifest.json'
-];
 
-// Install event - cache static assets
+// Install event - clear all caches for testing
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing - CLEARING ALL CACHES for testing');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .catch((error) => {
-        console.error('Cache installation failed:', error);
-      })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          console.log('Deleting cache:', cacheName);
+          return caches.delete(cacheName);
+        })
+      );
+    })
   );
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Activate event - clear all existing caches
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker activating - CLEARING ALL CACHES for testing');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames
-          .filter((cacheName) => cacheName !== CACHE_NAME)
-          .map((cacheName) => {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          })
+        cacheNames.map((cacheName) => {
+          console.log('Deleting cache:', cacheName);
+          return caches.delete(cacheName);
+        })
       );
     })
   );
   self.clients.claim();
 });
 
-// Fetch event - serve from cache when possible
+// Fetch event - BYPASS CACHE for testing - always fetch from network
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
@@ -55,41 +47,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  console.log('TESTING MODE: Bypassing cache for:', event.request.url);
+  
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log('Serving from cache:', event.request.url);
-          return cachedResponse;
-        }
-
-        // If not in cache, fetch from network
-        return fetch(event.request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response before caching
-            const responseToCache = response.clone();
-            
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                console.log('Caching new resource:', event.request.url);
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch((error) => {
-            console.error('Fetch failed:', error);
-            // Return a fallback response for HTML requests
-            if (event.request.destination === 'document') {
-              return caches.match('/index.html');
-            }
-            throw error;
-          });
-      })
+    fetch(event.request, {
+      cache: 'no-store', // Force fresh fetch
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
+    .then((response) => {
+      console.log('Fetched fresh from network:', event.request.url);
+      return response;
+    })
+    .catch((error) => {
+      console.error('Network fetch failed:', error);
+      throw error;
+    })
   );
 });

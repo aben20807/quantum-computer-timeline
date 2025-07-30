@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import Papa from 'papaparse';
 import TimelineChart from './components/TimelineChart.vue';
 import QPULegend from './components/QPULegend.vue';
@@ -13,6 +13,19 @@ const visibleOrganizations = ref(new Set());  // Track which organizations are v
 const selectedQPU = ref(null);
 const showTooltip = ref(false);
 const tooltipPosition = ref({ x: 0, y: 0 });
+const isHoveringTooltip = ref(false);
+const isTooltipLocked = ref(false); // Lock tooltip when user hovers long enough
+const lockProgress = ref(0); // Progress towards locking (0-100)
+
+// Redesigned timeout management - single source of truth
+const tooltipState = {
+  currentHoveredQPU: null,
+  lockTimer: null,
+  progressTimer: null,
+  hideTimer: null,
+  isLocking: false,
+  originalLockedQPU: null // Track the original locked QPU when hovering over different points
+};
 
 function parsePaperLinks(links) {
   try {
@@ -74,6 +87,13 @@ function getOrganizationStyles(data) {
 
 onMounted(() => {
   console.log('App mounted, fetching CSV data');
+  
+  // Add keyboard event listener
+  document.addEventListener('keydown', handleKeydown);
+  
+  // Add click event listener for unlocking tooltip on empty space
+  document.addEventListener('click', handleDocumentClick);
+  
   // Use the data file directly from the data directory
   fetch('./data/qpu_timeline.csv')
     .then(res => {
@@ -113,55 +133,348 @@ onMounted(() => {
     });
 });
 
+onUnmounted(() => {
+  // Clean up event listeners and timers
+  document.removeEventListener('keydown', handleKeydown);
+  document.removeEventListener('click', handleDocumentClick);
+  clearAllTooltipTimers();
+});
+
+// Clear all tooltip timers
+function clearAllTooltipTimers() {
+  if (tooltipState.lockTimer) {
+    clearTimeout(tooltipState.lockTimer);
+    tooltipState.lockTimer = null;
+  }
+  if (tooltipState.progressTimer) {
+    clearInterval(tooltipState.progressTimer);
+    tooltipState.progressTimer = null;
+  }
+  if (tooltipState.hideTimer) {
+    clearTimeout(tooltipState.hideTimer);
+    tooltipState.hideTimer = null;
+  }
+  tooltipState.isLocking = false;
+}
+
+// Start lock countdown for a specific QPU
+function startLockCountdown(qpu, event = null) {
+  // Clear any existing timers
+  clearAllTooltipTimers();
+  
+  tooltipState.currentHoveredQPU = qpu.name;
+  tooltipState.isLocking = true;
+  lockProgress.value = 0;
+  
+  const lockDuration = 5000; // 5 seconds
+  const progressStep = 100 / (lockDuration / 50); // Update every 50ms
+  
+  // Start progress animation
+  tooltipState.progressTimer = setInterval(() => {
+    if (tooltipState.isLocking && tooltipState.currentHoveredQPU === qpu.name) {
+      lockProgress.value += progressStep;
+      if (lockProgress.value >= 100) {
+        clearInterval(tooltipState.progressTimer);
+        tooltipState.progressTimer = null;
+      }
+    }
+  }, 50);
+  
+  // Set lock timer
+  tooltipState.lockTimer = setTimeout(() => {
+    if (tooltipState.currentHoveredQPU === qpu.name && tooltipState.isLocking) {
+      // If tooltip was already locked, switch to new QPU
+      if (isTooltipLocked.value && event) {
+        switchLockedTooltip(qpu, event);
+      } else {
+        isTooltipLocked.value = true;
+      }
+      lockProgress.value = 100;
+      tooltipState.isLocking = false;
+    }
+  }, lockDuration);
+}
+
+// Stop lock countdown
+function stopLockCountdown(qpu) {
+  // Stop countdown if this is the currently hovered QPU OR if no specific QPU is provided
+  if (!qpu || tooltipState.currentHoveredQPU === qpu.name || !tooltipState.currentHoveredQPU) {
+    clearAllTooltipTimers();
+    lockProgress.value = 0;
+    tooltipState.currentHoveredQPU = null;
+  }
+}
+
+// Force stop any active countdown (used for cleanup)
+function forceStopCountdown() {
+  clearAllTooltipTimers();
+  lockProgress.value = 0;
+  tooltipState.currentHoveredQPU = null;
+  tooltipState.isLocking = false;
+}
+
 function handlePointHover(qpu, event) {
+  // If tooltip is locked and this is a different QPU, start new lock process  
+  if (isTooltipLocked.value && selectedQPU.value?.name !== qpu.name) {
+    // Remember the original locked QPU
+    tooltipState.originalLockedQPU = selectedQPU.value;
+    startLockCountdown(qpu, event);
+    return; // Don't change current tooltip immediately
+  }
+  
+  // If same QPU is already selected and locked, do nothing
+  if (isTooltipLocked.value && selectedQPU.value?.name === qpu.name) {
+    return;
+  }
+
+  // Clear hide timer if it exists
+  if (tooltipState.hideTimer) {
+    clearTimeout(tooltipState.hideTimer);
+    tooltipState.hideTimer = null;
+  }
+
+  // Set new tooltip content and position
   selectedQPU.value = qpu;
   showTooltip.value = true;
   
-  // Calculate position with bounds checking
-  const tooltipWidth = 280; // Approximate tooltip width
-  const tooltipHeight = 200; // Approximate tooltip height
-  const margin = 20;
+  // Calculate position with smart positioning to avoid chart elements
+  const tooltipWidth = 280; 
+  const tooltipHeight = 200; 
+  const margin = 15;
+  const baseOffset = 25;
   
-  let x = event.clientX + 15;
-  let y = event.clientY - 10;
+  // Get the chart container bounds to determine safe areas
+  const chartElement = document.querySelector('[role="img"]');
+  const chartRect = chartElement ? chartElement.getBoundingClientRect() : null;
   
-  // Check if tooltip would go off the right edge
+  let x = event.clientX + baseOffset;
+  let y = event.clientY - baseOffset;
+  
+  // Smart positioning logic based on quadrants
+  const screenCenterX = window.innerWidth / 2;
+  const screenCenterY = window.innerHeight / 2;
+  const isLeftSide = event.clientX < screenCenterX;
+  const isTopSide = event.clientY < screenCenterY;
+  
+  // Position tooltip in the opposite quadrant when possible
+  if (isLeftSide && isTopSide) {
+    x = event.clientX + baseOffset;
+    y = event.clientY + baseOffset;
+  } else if (!isLeftSide && isTopSide) {
+    x = event.clientX - tooltipWidth - baseOffset;
+    y = event.clientY + baseOffset;  
+  } else if (isLeftSide && !isTopSide) {
+    x = event.clientX + baseOffset;
+    y = event.clientY - tooltipHeight - baseOffset;
+  } else {
+    x = event.clientX - tooltipWidth - baseOffset;
+    y = event.clientY - tooltipHeight - baseOffset;
+  }
+  
+  // If tooltip is within chart area (where highlighted points are), push it further
+  if (chartRect && 
+      x < chartRect.right && 
+      x + tooltipWidth > chartRect.left &&
+      y < chartRect.bottom && 
+      y + tooltipHeight > chartRect.top) {
+    
+    // Push tooltip outside chart area
+    if (isLeftSide) {
+      x = Math.max(chartRect.right + margin, x);
+    } else {
+      x = Math.min(chartRect.left - tooltipWidth - margin, x);
+    }
+  }
+  
+  // Final boundary checks
   if (x + tooltipWidth > window.innerWidth - margin) {
-    x = event.clientX - tooltipWidth - 15;
+    x = window.innerWidth - tooltipWidth - margin;
   }
-  
-  // Check if tooltip would go off the bottom edge
+  if (x < margin) {
+    x = margin;
+  }
   if (y + tooltipHeight > window.innerHeight - margin) {
-    y = event.clientY - tooltipHeight - 10;
+    y = window.innerHeight - tooltipHeight - margin;
   }
-  
-  // Ensure tooltip doesn't go off the left or top edges
-  x = Math.max(margin, x);
-  y = Math.max(margin, y);
+  if (y < margin) {
+    y = margin;
+  }
   
   tooltipPosition.value = { x, y };
+  
+  // Start lock countdown
+  startLockCountdown(qpu, event);
+}
+
+// Handle when a locked tooltip should switch to a new QPU after countdown
+function switchLockedTooltip(qpu, event) {
+  // Replace the locked tooltip with new one and recalculate position
+  selectedQPU.value = qpu;
+  
+  // Recalculate position for the new tooltip
+  const tooltipWidth = 280; 
+  const tooltipHeight = 200; 
+  const margin = 15;
+  const baseOffset = 25;
+  
+  let x = event.clientX + baseOffset;
+  let y = event.clientY - baseOffset;
+  
+  const screenCenterX = window.innerWidth / 2;
+  const screenCenterY = window.innerHeight / 2;
+  const isLeftSide = event.clientX < screenCenterX;
+  const isTopSide = event.clientY < screenCenterY;
+  
+  if (isLeftSide && isTopSide) {
+    x = event.clientX + baseOffset;
+    y = event.clientY + baseOffset;
+  } else if (!isLeftSide && isTopSide) {
+    x = event.clientX - tooltipWidth - baseOffset;
+    y = event.clientY + baseOffset;
+  } else if (isLeftSide && !isTopSide) {
+    x = event.clientX + baseOffset;
+    y = event.clientY - tooltipHeight - baseOffset;
+  } else {
+    x = event.clientX - tooltipWidth - baseOffset;
+    y = event.clientY - tooltipHeight - baseOffset;
+  }
+  
+  // Boundary checks
+  if (x + tooltipWidth > window.innerWidth - margin) {
+    x = window.innerWidth - tooltipWidth - margin;
+  }
+  if (x < margin) {
+    x = margin;
+  }
+  if (y + tooltipHeight > window.innerHeight - margin) {
+    y = window.innerHeight - tooltipHeight - margin;
+  }
+  if (y < margin) {
+    y = margin;
+  }
+  
+  tooltipPosition.value = { x, y };
+  lockProgress.value = 100;
+}
+
+function handlePointLeave(qpu) {
+  // If tooltip is locked, we need to handle different scenarios
+  if (isTooltipLocked.value) {
+    // If we're leaving the same QPU that's locked, do nothing (keep it locked)
+    if (selectedQPU.value && selectedQPU.value.name === qpu.name) {
+      return;
+    }
+    
+    // If we're leaving a different QPU while another is locked,
+    // stop the countdown and restore the original locked tooltip
+    if (tooltipState.isLocking && tooltipState.currentHoveredQPU === qpu.name) {
+      forceStopCountdown();
+      
+      // Restore the original locked QPU if we have one
+      if (tooltipState.originalLockedQPU) {
+        selectedQPU.value = tooltipState.originalLockedQPU;
+        tooltipState.originalLockedQPU = null; // Clear the backup
+      }
+      
+      // Restore the progress to 100% for the locked tooltip
+      lockProgress.value = 100;
+    }
+    return;
+  }
+  
+  // If tooltip is not locked, proceed with normal leave behavior
+  if (!isTooltipLocked.value) {
+    // Use force stop to ensure countdown stops regardless of QPU match
+    forceStopCountdown();
+    
+    // Start hide timeout
+    tooltipState.hideTimer = setTimeout(() => {
+      if (!isHoveringTooltip.value) {
+        showTooltip.value = false;
+        selectedQPU.value = null;
+      }
+    }, 200);
+  }
 }
 
 function handleChartLeave() {
-  // Add a small delay to allow moving from chart to tooltip
-  setTimeout(() => {
-    if (!isHoveringTooltip.value) {
-      showTooltip.value = false;
-      selectedQPU.value = null;
-    }
-  }, 100);
+  // Always stop any active countdown when leaving the chart area
+  if (!isTooltipLocked.value) {
+    forceStopCountdown();
+    
+    tooltipState.hideTimer = setTimeout(() => {
+      if (!isHoveringTooltip.value) {
+        showTooltip.value = false;
+        selectedQPU.value = null;
+      }
+    }, 300);
+  }
 }
 
-const isHoveringTooltip = ref(false);
-
 function handleTooltipMouseEnter() {
+  // Clear any pending hide timeout when entering tooltip
+  if (tooltipState.hideTimer) {
+    clearTimeout(tooltipState.hideTimer);
+    tooltipState.hideTimer = null;
+  }
+  
   isHoveringTooltip.value = true;
+  
+  // If not already locked, lock immediately when reaching tooltip
+  if (!isTooltipLocked.value) {
+    clearAllTooltipTimers();
+    isTooltipLocked.value = true;
+    lockProgress.value = 100;
+  }
 }
 
 function handleTooltipMouseLeave() {
   isHoveringTooltip.value = false;
+  // Tooltip remains locked when leaving - user must manually unlock
+}
+
+// Function to manually unlock tooltip
+function unlockTooltip() {
+  isTooltipLocked.value = false;
+  lockProgress.value = 0;
   showTooltip.value = false;
   selectedQPU.value = null;
+  clearAllTooltipTimers();
+}
+
+// Keyboard event handler
+function handleKeydown(event) {
+  if (event.key === 'Escape' && isTooltipLocked.value) {
+    unlockTooltip();
+  }
+}
+
+// Click event handler for unlocking tooltip when clicking empty space
+function handleDocumentClick(event) {
+  if (!isTooltipLocked.value) return;
+  
+  // Check if click is on tooltip or chart elements
+  const tooltipElement = document.querySelector('.tooltip-container');
+  const chartElement = document.querySelector('[role="img"]');
+  
+  if (tooltipElement && tooltipElement.contains(event.target)) {
+    // Click is inside tooltip, don't unlock
+    return;
+  }
+  
+  if (chartElement && chartElement.contains(event.target)) {
+    // Click is on chart, check if it's on a data point (let chart handle it)
+    // We'll only unlock if it's truly empty space, not on data points
+    const isDataPoint = event.target.closest('g[data-point]') || 
+                       event.target.tagName === 'circle' || 
+                       event.target.tagName === 'path';
+    if (isDataPoint) {
+      return; // Let chart handle data point clicks
+    }
+  }
+  
+  // Click is on empty space, unlock tooltip
+  unlockTooltip();
 }
 
 function toggleOrganizationVisibility(orgName) {
@@ -216,6 +529,7 @@ function resetOrganizationVisibility() {
           :organization-styles="organizations"
           :visible-organizations="visibleOrganizations"
           @point-hover="handlePointHover" 
+          @point-leave="handlePointLeave"
           @mouseleave="handleChartLeave" 
           role="img"
           aria-label="Interactive timeline chart showing quantum computer evolution by organization and qubit count over time"
@@ -329,13 +643,28 @@ function resetOrganizationVisibility() {
                position: 'fixed', 
                left: tooltipPosition.x + 'px', 
                top: tooltipPosition.y + 'px', 
-               zIndex: 1000
+               zIndex: 500
              }"
+             :class="['tooltip-container', { 'tooltip-locked': isTooltipLocked }]"
              @mouseenter="handleTooltipMouseEnter"
              @mouseleave="handleTooltipMouseLeave"
              role="tooltip"
              aria-live="polite">
           <QPUDetailTooltip :qpu="selectedQPU" />
+          
+          <!-- Progress indicator when approaching lock -->
+          <div v-if="lockProgress > 0 && lockProgress < 100" class="tooltip-progress-indicator">
+            <div class="progress-bar" :style="{ width: lockProgress + '%' }"></div>
+            <span class="progress-text">Keep hovering for 5s to lock...</span>
+          </div>
+          
+          <!-- Lock indicator when locked -->
+          <div v-if="isTooltipLocked" class="tooltip-lock-indicator">
+            📌 Click links freely
+            <button @click="unlockTooltip" class="unlock-button" title="Close tooltip">
+              ✕
+            </button>
+          </div>
         </div>
       </transition>
     </main>
@@ -353,6 +682,135 @@ function resetOrganizationVisibility() {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+
+/* Tooltip container styling to be less intrusive and more accessible */
+.tooltip-container {
+  pointer-events: auto;
+  backdrop-filter: blur(2px);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tooltip-locked {
+  border: 2px solid rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Tooltip lock indicator */
+.tooltip-lock-indicator {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: auto;
+  animation: lock-indicator-appear 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.unlock-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.unlock-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Tooltip progress indicator */
+.tooltip-progress-indicator {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(59, 130, 246, 0.9);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  min-width: 120px;
+  text-align: center;
+}
+
+.progress-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1px;
+  transition: width 0.05s linear;
+  margin-bottom: 2px;
+}
+
+.progress-text {
+  color: white;
+  display: block;
+}
+
+@keyframes lock-indicator-appear {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Add a larger invisible bridge area to make it easier to reach the tooltip */
+.tooltip-container::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  right: -40px;
+  bottom: -40px;
+  pointer-events: auto;
+  z-index: -1;
+}
+
+/* Add visual connection indicator */
+.tooltip-container::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  top: -4px;
+  left: -4px;
+  pointer-events: none;
+  animation: pulse-indicator 2s infinite;
+}
+
+.tooltip-locked::after {
+  background: rgba(34, 197, 94, 0.6);
+  animation: pulse-indicator-locked 1.5s infinite;
+}
+
+@keyframes pulse-indicator {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+@keyframes pulse-indicator-locked {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
 }
 
 /* Override global anchor styles with higher specificity */

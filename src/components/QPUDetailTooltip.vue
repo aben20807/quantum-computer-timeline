@@ -28,16 +28,17 @@ const props = defineProps({
 
 <style scoped>
 .tooltip-container {
-  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.87) 100%);
+  border: 1px solid rgba(255,255,255,0.25);
   border-radius: 12px;
   padding: 1rem;
   max-width: 280px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  backdrop-filter: blur(12px);
   color: #1a1a1a;
   font-size: 0.875rem;
   line-height: 1.4;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .tooltip-title {

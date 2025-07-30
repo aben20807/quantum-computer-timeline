@@ -25,7 +25,7 @@
 import { ref, onMounted, watch, nextTick, onBeforeUnmount } from 'vue';
 import * as echarts from 'echarts';
 
-const emit = defineEmits(['point-hover', 'mouseleave']);
+const emit = defineEmits(['point-hover', 'point-leave', 'mouseleave']);
 const props = defineProps({
   data: {
     type: Array,
@@ -43,6 +43,7 @@ const props = defineProps({
 
 const chartContainer = ref(null);
 let chartInstance = null;
+let currentHoveredOrganization = null;
 
 // Reset zoom function
 const resetZoom = () => {
@@ -111,176 +112,73 @@ const getChartData = () => {
     });
 };
 
-// Advanced collision-free label positioning with bounding box calculation
+// Simple cycling label positioning to avoid overlaps
 const calculateOptimalLabelPosition = (currentIndex, currentItem, allData, isMobile) => {
   const positions = ['top', 'bottom', 'left', 'right'];
-  const baseDistance = isMobile ? 4 : 6; // Reduced from 10/15 to 4/6
+  const distances = isMobile ? [8, 12, 8, 12] : [8, 12, 8, 12];
   
-  // Get current point coordinates
-  const currentTime = currentItem[0];
-  const currentQubits = currentItem[1];
-  const currentName = currentItem[3]?.name || 'Unknown';
-  
-  console.log(`Processing label for ${currentName} (index: ${currentIndex})`);
-  
-  // Estimate label dimensions (approximate)
-  const fontSize = isMobile ? 9 : 12;
-  const charWidth = fontSize * 0.6; // Approximate character width
-  const labelWidth = currentName.length * charWidth + 5; // +5 for padding
-  const labelHeight = fontSize + 3; // +3 for padding
-  
-  // Calculate label bounding boxes for all positions
-  const candidatePositions = positions.map(pos => {
-    let labelX, labelY;
-    const distance = baseDistance;
-    
-    // Calculate approximate label position based on ECharts positioning
-    switch (pos) {
-      case 'top':
-        labelX = currentTime - labelWidth / 2;
-        labelY = Math.log10(currentQubits) - distance - labelHeight;
-        break;
-      case 'bottom':
-        labelX = currentTime - labelWidth / 2;
-        labelY = Math.log10(currentQubits) + distance;
-        break;
-      case 'left':
-        labelX = currentTime - distance - labelWidth;
-        labelY = Math.log10(currentQubits) - labelHeight / 2;
-        break;
-      case 'right':
-        labelX = currentTime + distance;
-        labelY = Math.log10(currentQubits) - labelHeight / 2;
-        break;
-    }
-    
-    return {
-      position: pos,
-      distance: distance,
-      bbox: {
-        x: labelX,
-        y: labelY,
-        width: labelWidth,
-        height: labelHeight
-      }
-    };
-  });
-  
-  // Check for collisions with nearby points' labels
-  const timeWindow = 365 * 24 * 60 * 60 * 1000 * 3; // 3 years
-  const qubitWindow = 1.0; // 1.0 log units
-  
-  const nearbyPoints = allData.filter((item, index) => {
-    if (index === currentIndex) return false;
-    
-    const timeDiff = Math.abs(item[0] - currentTime);
-    const qubitLogDiff = Math.abs(Math.log10(item[1]) - Math.log10(currentQubits));
-    
-    return timeDiff < timeWindow && qubitLogDiff < qubitWindow;
-  });
-  
-  console.log(`Found ${nearbyPoints.length} nearby points for collision check`);
-  
-  // Score each position based on actual bounding box collisions
-  const scoredPositions = candidatePositions.map(candidate => {
-    let collisionScore = 0;
-    let minDistance = candidate.distance;
-    
-    nearbyPoints.forEach((nearbyPoint, nearbyIndex) => {
-      const nearbyName = nearbyPoint[3]?.name || 'Unknown';
-      const nearbyLabelWidth = nearbyName.length * charWidth + 10;
-      const nearbyLabelHeight = fontSize + 3;
-      
-      // Estimate where the nearby point's label might be
-      const nearbyTime = nearbyPoint[0];
-      const nearbyQubits = nearbyPoint[1];
-      
-      // Assume nearby labels follow similar positioning pattern
-      const nearbyPositionIndex = (currentIndex < allData.indexOf(nearbyPoint) ? 
-        allData.indexOf(nearbyPoint) : allData.indexOf(nearbyPoint)) % 4;
-      const nearbyPos = positions[nearbyPositionIndex];
-      
-      let nearbyLabelX, nearbyLabelY;
-      
-      switch (nearbyPos) {
-        case 'top':
-          nearbyLabelX = nearbyTime - nearbyLabelWidth / 2;
-          nearbyLabelY = Math.log10(nearbyQubits) - baseDistance - nearbyLabelHeight;
-          break;
-        case 'bottom':
-          nearbyLabelX = nearbyTime - nearbyLabelWidth / 2;
-          nearbyLabelY = Math.log10(nearbyQubits) + baseDistance;
-          break;
-        case 'left':
-          nearbyLabelX = nearbyTime - baseDistance - nearbyLabelWidth;
-          nearbyLabelY = Math.log10(nearbyQubits) - nearbyLabelHeight / 2;
-          break;
-        case 'right':
-          nearbyLabelX = nearbyTime + baseDistance;
-          nearbyLabelY = Math.log10(nearbyQubits) - nearbyLabelHeight / 2;
-          break;
-      }
-      
-      const nearbyBbox = {
-        x: nearbyLabelX,
-        y: nearbyLabelY,
-        width: nearbyLabelWidth,
-        height: nearbyLabelHeight
-      };
-      
-      // Check for bounding box collision
-      const collision = rectanglesOverlap(candidate.bbox, nearbyBbox);
-      if (collision) {
-        collisionScore += 10; // Heavy penalty for collision
-        
-        // Calculate needed distance to avoid collision
-        const overlapX = Math.max(0, Math.min(candidate.bbox.x + candidate.bbox.width, nearbyBbox.x + nearbyBbox.width) - 
-                                    Math.max(candidate.bbox.x, nearbyBbox.x));
-        const overlapY = Math.max(0, Math.min(candidate.bbox.y + candidate.bbox.height, nearbyBbox.y + nearbyBbox.height) - 
-                                    Math.max(candidate.bbox.y, nearbyBbox.y));
-        
-        if (overlapX > 0 || overlapY > 0) {
-          minDistance = Math.max(minDistance, baseDistance + Math.max(overlapX, overlapY) / 20); // Reduced multiplier from /10 to /20
-        }
-      }
-      
-      // Add proximity penalty even without collision
-      const centerDistance = Math.sqrt(
-        Math.pow(candidate.bbox.x + candidate.bbox.width/2 - (nearbyBbox.x + nearbyBbox.width/2), 2) +
-        Math.pow(candidate.bbox.y + candidate.bbox.height/2 - (nearbyBbox.y + nearbyBbox.height/2), 2)
-      );
-      
-      if (centerDistance < labelWidth) {
-        collisionScore += Math.max(0, 5 - centerDistance / 20); // Proximity penalty
-      }
-    });
-    
-    return {
-      ...candidate,
-      collisionScore,
-      adjustedDistance: Math.min(minDistance, baseDistance + 10) // Reduced cap from +20 to +10
-    };
-  });
-  
-  // Sort by collision score (lower is better)
-  scoredPositions.sort((a, b) => a.collisionScore - b.collisionScore);
-  
-  const bestOption = scoredPositions[0];
-  
-  console.log(`Selected position '${bestOption.position}' with collision score ${bestOption.collisionScore} and distance ${bestOption.adjustedDistance}`);
+  // Simple cycling pattern based on index
+  const positionIndex = currentIndex % positions.length;
+  const position = positions[positionIndex];
+  const distance = distances[positionIndex];
   
   return {
-    position: bestOption.position,
-    distance: bestOption.adjustedDistance
+    position: position,
+    distance: distance
   };
 };
 
-// Helper function to check if two rectangles overlap
-const rectanglesOverlap = (rect1, rect2) => {
-  return !(rect1.x + rect1.width < rect2.x || 
-           rect2.x + rect2.width < rect1.x || 
-           rect1.y + rect1.height < rect2.y || 
-           rect2.y + rect2.height < rect1.y);
+// Helper function to generate series data with optional organization highlighting
+const generateSeriesData = (chartData, isMobile, hoveredOrganization = null) => {
+  return chartData.map((item, index) => {
+    const qpu = item[3];
+    const style = getOrganizationStyle(qpu.organization);
+    const isFromSameOrg = hoveredOrganization ? qpu.organization === hoveredOrganization : false;
+    const isHovered = !!hoveredOrganization;
+    
+    // Calculate optimal label position using simple cycling
+    const { position, distance } = calculateOptimalLabelPosition(
+      index, 
+      item, 
+      chartData, 
+      isMobile
+    );
+    
+    return {
+      value: [item[0], item[1]], 
+      symbol: style.symbol,
+      symbolSize: isHovered ? (isFromSameOrg ? (isMobile ? 16 : 26) : (isMobile ? 12 : 20)) : (isMobile ? 12 : 20),
+      itemStyle: {
+        color: style.color,
+        borderColor: isHovered && isFromSameOrg ? '#fff' : 'transparent',
+        borderWidth: isHovered && isFromSameOrg ? 2 : 0,
+        shadowBlur: isHovered && isFromSameOrg ? 10 : 0,
+        shadowColor: isHovered && isFromSameOrg ? style.color : 'transparent',
+        opacity: isHovered ? (isFromSameOrg ? 1.0 : 0.3) : 1.0
+      },
+      qpuData: qpu,
+      label: {
+        show: true,
+        position: position,
+        formatter: isMobile
+          ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name) 
+          : qpu.name,
+        color: isHovered ? (isFromSameOrg ? '#fff' : 'rgba(255,255,255,0.5)') : '#fff',
+        fontSize: isHovered ? (isFromSameOrg ? (isMobile ? 11 : 14) : (isMobile ? 9 : 12)) : (isMobile ? 9 : 12),
+        fontWeight: 'bold',
+        distance: distance,
+        backgroundColor: isHovered ? (isFromSameOrg ? 'rgba(0,0,0,0.9)' : 'rgba(0,0,0,0.5)') : 'rgba(0,0,0,0.7)',
+        borderColor: 'transparent', 
+        borderWidth: 0, 
+        borderRadius: isMobile ? 1 : 3,
+        padding: isMobile ? [1, 3] : [2, 5], 
+        textShadowColor: 'transparent', 
+        textShadowBlur: 0, 
+        textShadowOffsetX: 0,
+        textShadowOffsetY: 0
+      }
+    };
+  });
 };
 
 const renderChart = () => {
@@ -605,56 +503,7 @@ const renderChart = () => {
     series: [{
       type: 'scatter',
       name: 'QPU Data',
-      data: chartData.map((item, index) => {
-        const qpu = item[3];
-        const style = getOrganizationStyle(qpu.organization);
-        
-        // Use force-directed label positioning algorithm to avoid overlaps
-        const totalPoints = chartData.length;
-        let shouldShowLabel = true;
-        
-        // Calculate optimal label position using collision detection
-        const { position, distance } = calculateOptimalLabelPosition(
-          index, 
-          item, 
-          chartData, 
-          isMobile
-        );
-        
-        return {
-          value: [item[0], item[1]], // Now correctly interpreted as [time, value]
-          symbol: style.symbol,
-          symbolSize: isMobile ? 12 : 20, // Slightly larger for flat design since no borders
-          itemStyle: {
-            color: style.color,
-            borderColor: 'transparent', // Remove borders for flat design
-            borderWidth: 0, // No border for flat style
-            shadowBlur: 0, // Remove shadows for flat design
-            shadowColor: 'transparent'
-          },
-          qpuData: qpu,
-          label: {
-            show: shouldShowLabel,
-            position: position,
-            formatter: isMobile
-              ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name) // Even shorter names on mobile
-              : qpu.name,
-            color: '#fff',
-            fontSize: isMobile ? 9 : 12, // Increased from 7/10 to 9/12
-            fontWeight: 'bold',
-            distance: distance,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            borderColor: 'transparent', // Remove borders for flat design
-            borderWidth: 0, // No border for flat style
-            borderRadius: isMobile ? 1 : 3,
-            padding: isMobile ? [1, 3] : [2, 5], // Slightly more padding for better separation
-            textShadowColor: 'transparent', // Remove text shadow for flat design
-            textShadowBlur: 0, // No blur for flat style
-            textShadowOffsetX: 0,
-            textShadowOffsetY: 0
-          }
-        };
-      }),
+      data: generateSeriesData(chartData, isMobile, currentHoveredOrganization),
       emphasis: {
         scale: 1.2,  // Subtle scaling for flat design
         itemStyle: {
@@ -679,16 +528,73 @@ const renderChart = () => {
   chartInstance.resize();
   
   chartInstance.off('mouseover');
+  chartInstance.off('mouseout');
   chartInstance.off('globalout');
   
   chartInstance.on('mouseover', (params) => {
-    if (params.componentType === 'series') {
+    if (params.componentType === 'series' && params.data && params.data.qpuData) {
+      const hoveredOrganization = params.data.qpuData.organization;
+      
+      // Update the global hover state
+      currentHoveredOrganization = hoveredOrganization;
+      
+      // Update the chart with highlighted data for the same organization
+      const updatedSeriesData = generateSeriesData(chartData, isMobile, hoveredOrganization);
+      
+      chartInstance.setOption({
+        series: [{
+          data: updatedSeriesData
+        }]
+      }, { notMerge: false });
+      
       emit('point-hover', params.data.qpuData, params.event.event);
     }
   });
   
+  chartInstance.on('mouseout', (params) => {
+    if (params.componentType === 'series' && params.data && params.data.qpuData) {
+      // Reset the organization highlighting when leaving a data point
+      currentHoveredOrganization = null;
+      
+      // Reset all data points to normal state
+      const normalSeriesData = generateSeriesData(chartData, isMobile, null);
+      
+      chartInstance.setOption({
+        series: [{
+          data: normalSeriesData
+        }]
+      }, { notMerge: false });
+      
+      // Immediately emit point-leave to stop countdown
+      emit('point-leave', params.data.qpuData);
+    }
+  });
+  
   chartInstance.on('globalout', () => {
-    emit('mouseleave');
+    // Reset the global hover state
+    currentHoveredOrganization = null;
+    
+    // Reset all data points to normal state
+    const normalSeriesData = generateSeriesData(chartData, isMobile, null);
+    
+    chartInstance.setOption({
+      series: [{
+        data: normalSeriesData
+      }]
+    }, { notMerge: false });
+    
+    // Emit point-leave for any currently hovered point to ensure countdown stops
+    if (chartData && chartData.length > 0) {
+      // Find any point that might be currently in countdown state and emit leave for it
+      chartData.forEach(item => {
+        emit('point-leave', item[3]); // item[3] contains the qpu data
+      });
+    }
+    
+    // Add a delay before emitting mouseleave to allow moving to tooltip
+    setTimeout(() => {
+      emit('mouseleave');
+    }, 150);
   });
   
   // Add zoom event handlers for better UX
@@ -708,9 +614,10 @@ const renderChart = () => {
           const updatedSeries = newChartData.map((item, index) => {
             const qpu = item[3];
             const style = getOrganizationStyle(qpu.organization);
+            const isFromSameOrg = currentHoveredOrganization ? qpu.organization === currentHoveredOrganization : false;
+            const isHovered = !!currentHoveredOrganization;
             
-            // Adjust label density and positioning based on zoom level using collision detection
-            const totalPoints = newChartData.length;
+            // Adjust label density and positioning based on zoom level
             let labelShowFrequency = 1;
             let shouldShowLabel = true;
             
@@ -719,7 +626,7 @@ const renderChart = () => {
             else if (zoomLevel > 75) labelShowFrequency = 2;  // Moderately zoomed out
             else labelShowFrequency = 1;                      // Show all when reasonable zoom
             
-            // Use force-directed positioning for zoom too
+            // Use simple cycling positioning for zoom too
             const { position, distance } = calculateOptimalLabelPosition(
               index, 
               item, 
@@ -735,13 +642,14 @@ const renderChart = () => {
             return {
               value: [item[0], item[1]],
               symbol: style.symbol,
-              symbolSize: isMobile ? 12 : 20,
+              symbolSize: isHovered ? (isFromSameOrg ? (isMobile ? 16 : 26) : (isMobile ? 12 : 20)) : (isMobile ? 12 : 20),
               itemStyle: {
                 color: style.color,
-                borderColor: 'transparent',
-                borderWidth: 0,
-                shadowBlur: 0,
-                shadowColor: 'transparent'
+                borderColor: isHovered && isFromSameOrg ? '#fff' : 'transparent',
+                borderWidth: isHovered && isFromSameOrg ? 2 : 0,
+                shadowBlur: isHovered && isFromSameOrg ? 10 : 0,
+                shadowColor: isHovered && isFromSameOrg ? style.color : 'transparent',
+                opacity: isHovered ? (isFromSameOrg ? 1.0 : 0.3) : 1.0
               },
               qpuData: qpu,
               label: {
@@ -750,11 +658,11 @@ const renderChart = () => {
                 formatter: isMobile
                   ? (qpu.name.length > 8 ? qpu.name.substring(0, 5) + '...' : qpu.name)
                   : qpu.name,
-                color: '#fff',
-                fontSize: zoomLevel < 30 ? (isMobile ? 10 : 13) : (isMobile ? 9 : 12),
+                color: isHovered ? (isFromSameOrg ? '#fff' : 'rgba(255,255,255,0.5)') : '#fff',
+                fontSize: zoomLevel < 30 ? (isMobile ? 10 : 13) : (isHovered ? (isFromSameOrg ? (isMobile ? 11 : 14) : (isMobile ? 9 : 12)) : (isMobile ? 9 : 12)),
                 fontWeight: 'bold',
                 distance: distance,
-                backgroundColor: 'rgba(0,0,0,0.7)',
+                backgroundColor: isHovered ? (isFromSameOrg ? 'rgba(0,0,0,0.9)' : 'rgba(0,0,0,0.5)') : 'rgba(0,0,0,0.7)',
                 borderColor: 'transparent',
                 borderWidth: 0,
                 borderRadius: isMobile ? 1 : 3,
@@ -976,6 +884,9 @@ const updateChartForMobile = () => {
 };
 
 onBeforeUnmount(() => {
+  // Reset hover state
+  currentHoveredOrganization = null;
+  
   // Remove event listeners
   window.removeEventListener('resize', handleResize);
   window.removeEventListener('keydown', handleKeyDown);
@@ -983,6 +894,7 @@ onBeforeUnmount(() => {
   if (chartInstance) {
     // Clean up all chart events
     chartInstance.off('mouseover');
+    chartInstance.off('mouseout');
     chartInstance.off('globalout');
     chartInstance.off('datazoom');
     chartInstance.dispose();
@@ -992,12 +904,16 @@ onBeforeUnmount(() => {
 
 watch(() => props.data, (newData) => {
   console.log('Data changed:', newData);
+  // Reset hover state when data changes
+  currentHoveredOrganization = null;
   nextTick(() => renderChart());
 }, { deep: true });
 
 // Watch for changes in visible organizations
 watch(() => props.visibleOrganizations, () => {
   console.log('Visible organizations changed:', [...props.visibleOrganizations]);
+  // Reset hover state when visible organizations change
+  currentHoveredOrganization = null;
   nextTick(() => renderChart());
 }, { deep: true });
 </script>
