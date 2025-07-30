@@ -9,11 +9,31 @@
         which themselves may contain varying degrees of precision or marketing claims.
       </p>
       
+      <h3 class="disclaimer-subtitle">Dataset Coverage and Limitations</h3>
+      <p class="disclaimer-text">
+        This timeline represents a <strong>curated selection</strong> of quantum computers and does not include all QPUs ever developed. 
+        Some quantum processors may be excluded due to:
+      </p>
+      <ul class="disclaimer-list">
+        <li><strong>Limited public information:</strong> Proprietary or classified systems with insufficient public documentation</li>
+        <li><strong>Research prototypes:</strong> Early-stage experimental systems not intended for broader demonstration</li>
+        <li><strong>Commercial confidentiality:</strong> Systems under development or commercial restrictions</li>
+        <li><strong>Academic focus:</strong> Priority given to systems with published research papers or significant milestones</li>
+        <li><strong>Data availability:</strong> Missing critical information like qubit count or release dates</li>
+        <li><strong>Verification challenges:</strong> Difficulty in confirming specifications from reliable sources</li>
+      </ul>
+      <p class="disclaimer-text">
+        The timeline emphasizes systems that have contributed significantly to quantum computing progress, 
+        have been publicly demonstrated, or represent important technological milestones.
+      </p>
+      
       <h3 class="disclaimer-subtitle">Contribute to Data Accuracy</h3>
       <p class="disclaimer-text">
-        If you find any errors or have more accurate/updated information, please submit an issue or pull request on 
+        If you find any errors, have more accurate information, or know of significant QPUs that should be included, 
+        please submit an issue or pull request on 
         <a href="https://github.com/aben20807/quantum-computer-timeline" target="_blank" class="disclaimer-link">GitHub</a>. 
-        For substantial additions or corrections, please include references to verifiable sources.
+        For substantial additions or corrections, please include references to verifiable sources such as research papers, 
+        official announcements, or peer-reviewed publications.
       </p>
       
       <p class="disclaimer-text notice">
@@ -69,6 +89,34 @@
   line-height: 1.6;
   color: rgba(255,255,255,0.85);
   margin-bottom: 0.75rem;
+}
+
+.disclaimer-list {
+  margin: 0.75rem 0 1rem 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.disclaimer-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  position: relative;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.8);
+}
+
+.disclaimer-list li::before {
+  content: "•";
+  color: #4fc3f7;
+  font-weight: bold;
+  position: absolute;
+  left: -0.5rem;
+}
+
+.disclaimer-list li strong {
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
 }
 
 .disclaimer-text.notice {
